@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Post</title>
+</head>
+<body>
+<h1>Edit Post</h1>
+<form action="/posts/{{.post.ID}}" method="POST">
+  <input type="hidden" name="_method" value="PATCH">
+  <textarea name="Content" required>{{.post.Content}}</textarea>
+  <button type="submit">Update</button>
+</form>
+</body>
+</html>

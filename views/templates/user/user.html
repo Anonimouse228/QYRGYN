@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{.user.Username}}</title>
+</head>
+<body>
+<h1>{{.user.Username}}</h1>
+<p>Email: {{.user.Email}}</p>
+<a href="/users/{{.user.ID}}/edit">Edit</a>
+<form onsubmit="return deleteUser(event, user.id)" style="display:inline;">
+  <button type="submit">Delete</button>
+</form>
+<br><a href="/users">Back to Users</a>
+
+
+</body>
+
+<script>
+  function deleteUser(event, userId) {
+    event.preventDefault(); // Prevent form submission
+    fetch(`/users/${userId}`, {
+      method: 'DELETE'
+    })
+            .then(response => {
+              if (response.redirected) {
+                window.location.reload(); // Reload the page after successful deletion
+              } else {
+                alert('Failed to delete the user');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
+
+</script>
+
+</html>

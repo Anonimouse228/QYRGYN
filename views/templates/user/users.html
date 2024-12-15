@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users</title>
+</head>
+<body>
+<h1>Users</h1>
+<a href="/users/new">Create New User</a>
+<ul>
+  {{range .users}}
+  <li><a href="/users/{{.ID}}">{{.Username}}</a></li>
+  {{end}}
+</ul>
+</body>
+</html>

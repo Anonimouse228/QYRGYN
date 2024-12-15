@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New Post</title>
+</head>
+<body>
+<h1>Create New Post</h1>
+<form action="/posts" method="POST">
+  <label for="UserId">User ID:</label>
+  <input type="number" id="UserId" name="UserId" required>
+  <br>
+  <label for="Content">Content:</label>
+  <textarea id="Content" name="Content" placeholder="Write something..." required></textarea>
+  <br>
+  <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
