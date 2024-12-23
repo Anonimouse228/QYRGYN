@@ -7,6 +7,23 @@
 <body>
 <h1>All Posts</h1>
 <a href="/posts/new">Create New Post</a>
+
+<form method="get" action="/posts">
+  <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
+  <select name="sort">
+    <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
+    <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
+  </select>
+  <select name="order">
+    <option value="asc" {{if eq .order "asc"}}selected{{end}}>Ascending</option>
+    <option value="desc" {{if eq .order "desc"}}selected{{end}}>Descending</option>
+  </select>
+  <input type="hidden" name="page" value="{{.page}}">
+  <input type="hidden" name="pageSize" value="5">
+  <button type="submit">Filter</button>
+</form>
+
+
 <ul>
   {{range .posts}}
   <li>
@@ -15,11 +32,24 @@
     <form onsubmit="return deletePost(event, '{{.ID}}')" style="display:inline;">
       <button type="submit">Delete</button>
     </form>
-
-
   </li>
   {{end}}
 </ul>
+
+<div>
+  {{if gt .page 1}}
+  <a href="?page={{sub .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Previous</a>
+  {{end}}
+
+  Page {{.page}} of {{.totalPages}}
+
+  {{if lt .page .totalPages}}
+  <a href="?page={{add .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Next</a>
+  {{end}}
+</div>
+
+
+
 </body>
 
 <script>

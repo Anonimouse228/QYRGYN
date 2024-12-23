@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func CreatePost(c *gin.Context) {
@@ -35,19 +36,58 @@ func CreatePost(c *gin.Context) {
 
 func GetPosts(c *gin.Context) {
 	var posts []models.Post
+	query := database.DB
 
-	// Fetch all posts from the database
-	if err := database.DB.Find(&posts).Error; err != nil {
-		// Handle the error (e.g., show an error page or log it)
+	// Filtering
+	if content := c.Query("content"); content != "" {
+		query = query.Where("content ILIKE ?", "%"+content+"%")
+	}
+
+	// Sorting
+	sortBy := c.DefaultQuery("sort", "id") // Default sort by ID
+	order := c.DefaultQuery("order", "asc")
+	query = query.Order(fmt.Sprintf("%s %s", sortBy, order))
+
+	// Pagination
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "5"))
+	offset := (page - 1) * pageSize
+
+	var total int64
+	query.Model(&models.Post{}).Count(&total) // Count total records
+	query = query.Offset(offset).Limit(pageSize)
+
+	if err := query.Find(&posts).Error; err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{
 			"error": "Failed to retrieve posts: " + err.Error(),
 		})
 		return
 	}
 
-	// Render the posts on the HTML page
-	c.HTML(http.StatusOK, "posts.html", gin.H{"posts": posts})
+	c.HTML(http.StatusOK, "posts.html", gin.H{
+		"posts":      posts,
+		"page":       page,
+		"totalPages": (total + int64(pageSize) - 1) / int64(pageSize),
+		"content":    c.Query("content"),
+		"sort":       c.DefaultQuery("sort", "id"),
+		"order":      c.DefaultQuery("order", "asc"),
+	})
+
 }
+
+//func GetPosts(c *gin.Context) {
+//	var posts []models.Post
+//
+//	if err := database.DB.Find(&posts).Error; err != nil {
+//
+//		c.HTML(http.StatusInternalServerError, "error.html", gin.H{
+//			"error": "Failed to retrieve posts: " + err.Error(),
+//		})
+//		return
+//	}
+//
+//	c.HTML(http.StatusOK, "posts.html", gin.H{"posts": posts})
+//}
 
 func NewPost(c *gin.Context) {
 	c.HTML(http.StatusOK, "new_post.html", nil)
