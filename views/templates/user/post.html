@@ -6,7 +6,33 @@
 </head>
 <body>
 <h1>Post Details</h1>
-<p>{{.post.Content}}</p>
+<p id="content"></p>
 <a href="/posts">Back to All Posts</a>
+
+<script>
+  // Get post ID from the URL query string, e.g., /post.html?id=5
+  const urlParams = new URLSearchParams(window.location.search);
+  const postId = urlParams.get('id'); // Fetch ID dynamically from URL
+
+  // Token stored in localStorage (example)
+  const token = localStorage.getItem('authToken'); // Replace with your actual storage mechanism
+
+  // Fetch the post dynamically based on ID
+  fetch(`/api/posts/${postId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`, // Attach token
+      'Content-Type': 'application/json'
+    }
+  })
+          .then(response => {
+            if (!response.ok) throw new Error('Unauthorized');
+            return response.json();
+          })
+          .then(data => {
+            document.getElementById('content').innerText = data.content; // Update content
+          })
+          .catch(error => console.error('Error:', error));
+</script>
 </body>
 </html>

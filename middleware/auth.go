@@ -1,36 +1,27 @@
 package middleware
 
 import (
-	"QYRGYN/util"
 	"net/http"
-	"strings"
 
-	_ "QYRGYN/util"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/gorilla/sessions"
 )
 
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing token"})
-			c.Abort()
-			return
-		}
+var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
-		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+func AuthRequired(c *gin.Context) {
+	session, _ := store.Get(c.Request, "session")
 
-		token, err := util.ValidateToken(tokenString)
-		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			c.Abort()
-			return
-		}
+	userID, ok := session.Values["user_id"].(uint)
+	if !ok || userID == 0 {
 
-		claims, _ := token.Claims.(jwt.MapClaims)
-		c.Set("username", claims["username"])
-
-		c.Next()
+		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
+		return
 	}
+
+	// Store user ID in the context
+	c.Set("userID", userID)
+
+	c.Next()
 }

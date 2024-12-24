@@ -13,7 +13,7 @@ func main() {
 	database.InitDatabase("host=localhost port=5432 user=postgres dbname=qyrgyn sslmode=disable")
 	router := gin.Default()
 
-	log.Println("Server running on port 8080...")
+	log.Println("Server running on port localhost:8080/posts")
 
 	routes.InitRoutes(router)
 

@@ -12,6 +12,18 @@ import (
 func CreatePost(c *gin.Context) {
 	var post models.Post
 
+	// Retrieve user ID directly from the context
+	userID, exists := c.Get("userID")
+	if !exists {
+		// In case somehow the userID is not set in the context (shouldn't happen)
+		c.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "In case somehow the userID is not set in the context (shouldn't happen)"})
+		return
+	}
+
+	// Assign the userID to the post
+	post.UserId = int(userID.(uint))
+
+	// Bind the form data to the post struct
 	if err := c.ShouldBind(&post); err != nil {
 		fmt.Println("Binding error:", err)
 		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
@@ -19,11 +31,6 @@ func CreatePost(c *gin.Context) {
 	}
 
 	fmt.Printf("Post received: %+v\n", post)
-	if post.UserId == 0 {
-		fmt.Println("UserId is missing")
-		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "UserID is required"})
-		return
-	}
 
 	// Save the post to the database
 	if err := database.DB.Create(&post).Error; err != nil {
@@ -31,6 +38,7 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 
+	// Redirect to posts page after successful creation
 	c.Redirect(http.StatusFound, "/posts")
 }
 
@@ -40,11 +48,11 @@ func GetPosts(c *gin.Context) {
 
 	// Filtering
 	if content := c.Query("content"); content != "" {
-		query = query.Where("content ILIKE ?", "%"+content+"%")
+		query = query.Where("content LIKE ?", "%"+content+"%")
 	}
 
 	// Sorting
-	sortBy := c.DefaultQuery("sort", "id") // Default sort by ID
+	sortBy := c.DefaultQuery("sort", "created_at") // Default sort by date
 	order := c.DefaultQuery("order", "asc")
 	query = query.Order(fmt.Sprintf("%s %s", sortBy, order))
 

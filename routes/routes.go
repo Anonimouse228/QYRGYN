@@ -32,31 +32,34 @@ func InitRoutes(router *gin.Engine) {
 	})
 	rl := middleware.NewRateLimiter(2, 5)
 
+	// Load templates
 	router.LoadHTMLGlob("views/templates/user/*")
 
-	router.POST("/register", controllers.Register)
-	router.POST("/login", controllers.Login)
+	// Register and login
+	router.GET("/register", middleware.RateLimitMiddleware(rl), controllers.RegisterHTML)
+	router.GET("/login", middleware.RateLimitMiddleware(rl), controllers.LoginHTML)
+	router.POST("/register", middleware.RateLimitMiddleware(rl), controllers.Register)
+	router.POST("/login", middleware.RateLimitMiddleware(rl), controllers.Login)
+	router.POST("/logout", middleware.RateLimitMiddleware(rl), controllers.Logout)
 
 	// Protected routes
 	auth := router.Group("/")
-	auth.Use(middleware.AuthMiddleware())
-	{
-		auth.GET("/posts", middleware.RateLimitMiddleware(rl), controllers.GetPosts)
-		auth.GET("/posts/new", middleware.RateLimitMiddleware(rl), controllers.NewPost)
-		auth.POST("/posts", middleware.RateLimitMiddleware(rl), controllers.CreatePost)
-		auth.GET("/posts/:id/edit", controllers.EditPost)
-		auth.GET("/posts/:id", controllers.GetPost)
-		auth.POST("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.UpdatePost)
-		auth.DELETE("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.DeletePost)
-	}
+	auth.Use(middleware.AuthRequired)
+	// Post routes with rate limiter
+	auth.GET("/posts", middleware.RateLimitMiddleware(rl), controllers.GetPosts)
+	auth.GET("/posts/new", middleware.RateLimitMiddleware(rl), controllers.NewPost)
+	auth.POST("/posts", middleware.RateLimitMiddleware(rl), controllers.CreatePost)
+	auth.GET("/posts/:id/edit", controllers.EditPost)
+	auth.GET("/posts/:id", controllers.GetPost)
+	auth.POST("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.UpdatePost)
+	auth.DELETE("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.DeletePost)
+
+	auth.GET("/users/profile", controllers.GetUserProfile)
+	auth.PUT("/users/profile", controllers.UpdateProfile)
 
 	// Task routes with rate limiter
 	router.GET("task1", middleware.RateLimitMiddleware(rl), task1.Get)
 	router.POST("task1", middleware.RateLimitMiddleware(rl), task1.Post)
-
-	// Load templates
-
-	// Post routes with rate limiter
 
 	// User routes with rate limiter
 	router.GET("/users", middleware.RateLimitMiddleware(rl), controllers.GetUsers)

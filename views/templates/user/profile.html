@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile</title>
+</head>
+<body>
+<h1>Your Profile</h1>
+<div id="profileInfo">
+<p>Username: <span id="username"></span></p>
+<p>Email: <span id="email"></span></p>
+</div>
+<button id="editButton" style="display: none;" onclick="editProfile()">Edit Profile</button>
+
+<script>
+async function loadProfile() {
+const token = localStorage.getItem('token');
+const response = await fetch('/users/profile', {
+headers: { 'Authorization': token },
+});
+
+if (response.ok) {
+const data = await response.json();
+document.getElementById('username').textContent = data.username;
+document.getElementById('email').textContent = data.email;
+
+// Show Edit button if the user is viewing their own profile
+document.getElementById('editButton').style.display = 'block';
+} else {
+alert('Failed to load profile');
+}
+}
+
+function editProfile() {
+window.location.href = '/edit-profile.html';
+}
+
+loadProfile();
+</script>
+</body>
+</html>

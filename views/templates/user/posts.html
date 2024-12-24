@@ -6,8 +6,9 @@
 </head>
 <body>
 <h1>All Posts</h1>
+<button onclick="logout()">Logout</button>
 <a href="/posts/new">Create New Post</a>
-
+<hr/>
 <form method="get" action="/posts">
   <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
   <select name="sort">
