@@ -6,37 +6,24 @@
 <title>Profile</title>
 </head>
 <body>
-<h1>Your Profile</h1>
-<div id="profileInfo">
-<p>Username: <span id="username"></span></p>
-<p>Email: <span id="email"></span></p>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Details</title>
+</head>
+<body>
+<h1>User profile</h1>
+
+<div class="user">
+    <p><strong>Posted by {{.user.Username}}| ID: {{.user.ID}}</strong></p>
+    <p>Email {{.user.Email}}</p>
+    <p><small>Created at: {{.user.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+    <p><small>Last updated: {{.user.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
 </div>
-<button id="editButton" style="display: none;" onclick="editProfile()">Edit Profile</button>
+<a href="/users/edit/:id"></a>
+<a href="/posts">Back to All Posts</a>
 
-<script>
-async function loadProfile() {
-const token = localStorage.getItem('token');
-const response = await fetch('/users/profile', {
-headers: { 'Authorization': token },
-});
-
-if (response.ok) {
-const data = await response.json();
-document.getElementById('username').textContent = data.username;
-document.getElementById('email').textContent = data.email;
-
-// Show Edit button if the user is viewing their own profile
-document.getElementById('editButton').style.display = 'block';
-} else {
-alert('Failed to load profile');
-}
-}
-
-function editProfile() {
-window.location.href = '/edit-profile.html';
-}
-
-loadProfile();
-</script>
 </body>
 </html>

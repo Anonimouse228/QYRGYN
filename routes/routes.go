@@ -54,20 +54,21 @@ func InitRoutes(router *gin.Engine) {
 	auth.POST("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.UpdatePost)
 	auth.DELETE("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.DeletePost)
 
-	auth.GET("/users/profile", controllers.GetUserProfile)
-	auth.PUT("/users/profile", controllers.UpdateProfile)
+	auth.GET("/users/:id", controllers.GetUserProfile)
+	auth.GET("/users/edit/:id", controllers.UpdateUserPage)
+	auth.POST("/users/:id/edit", controllers.UpdateUserProfile)
 
-	// Task routes with rate limiter
+	// First assignment, first task
 	router.GET("task1", middleware.RateLimitMiddleware(rl), task1.Get)
 	router.POST("task1", middleware.RateLimitMiddleware(rl), task1.Post)
 
 	// User routes with rate limiter
-	router.GET("/users", middleware.RateLimitMiddleware(rl), controllers.GetUsers)
-	router.GET("/users/new", middleware.RateLimitMiddleware(rl), controllers.NewUserForm)
-	router.POST("/users", middleware.RateLimitMiddleware(rl), controllers.CreateUser)
-	router.GET("/users/:id", middleware.RateLimitMiddleware(rl), controllers.GetUser)
-	router.GET("/users/:id/edit", controllers.EditUser)
-	router.PATCH("/users/:id", middleware.RateLimitMiddleware(rl), controllers.UpdateUser)
-	router.DELETE("/users/:id", middleware.RateLimitMiddleware(rl), controllers.DeleteUser)
+	//router.GET("/users", middleware.RateLimitMiddleware(rl), controllers.GetUsers)
+	//router.GET("/users/new", middleware.RateLimitMiddleware(rl), controllers.NewUserForm)
+	//router.POST("/users", middleware.RateLimitMiddleware(rl), controllers.CreateUser)
+	//router.GET("/users/:id", middleware.RateLimitMiddleware(rl), controllers.GetUser)
+	//router.GET("/users/:id/edit", controllers.EditUser)
+	//router.PATCH("/users/:id", middleware.RateLimitMiddleware(rl), controllers.UpdateUser)
+	//router.DELETE("/users/:id", middleware.RateLimitMiddleware(rl), controllers.DeleteUser)
 
 }

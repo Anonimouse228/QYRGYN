@@ -84,7 +84,7 @@ func Logout(c *gin.Context) {
 	delete(session.Values, "userID")
 	session.Save(c.Request, c.Writer)
 
-	c.Redirect(http.StatusFound, "/posts")
+	c.Redirect(http.StatusFound, "/login")
 }
 
 func RegisterHTML(c *gin.Context) {

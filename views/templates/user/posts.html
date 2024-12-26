@@ -27,13 +27,23 @@
 
 <ul>
   {{range .posts}}
-  <li>
-    <a href="/posts/{{.ID}}">{{.Content}}</a>
-    <a href="/posts/{{.ID}}/edit">Edit</a>
-    <form onsubmit="return deletePost(event, '{{.ID}}')" style="display:inline;">
-      <button type="submit">Delete</button>
-    </form>
-  </li>
+    <li>
+      <div class="post">
+        <p><strong>Posted by {{.Username}}| ID: {{.UserId}}</strong></p>
+        <p>{{.Content}}</p>
+        <p><small>Likes: {{.Likes}}</small></p>
+        <p><small>Created at: {{.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+        <p><small>Last updated: {{.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+        <p><a href="/posts/{{.ID}}">See post</a></p>
+        <div class="actions">
+          <a href="/posts/{{.ID}}/edit">Edit</a>
+          <form onsubmit="return deletePost(event, '{{.ID}}')" style="display:inline;">
+            <button type="submit">Delete</button>
+          </form>
+          <button onclick="likePost('{{.ID}}')">Like</button>
+        </div>
+      </div>
+    </li>
   {{end}}
 </ul>
 
@@ -68,7 +78,19 @@
             })
             .catch(error => console.error('Error:', error));
   }
-
+  function logout() {
+    fetch('/logout', {
+      method: 'POST',
+      credentials: 'same-origin' // Ensures cookies are sent with the request
+    })
+            .then(response => {
+              if (response.ok) {
+                window.location.href = '/login'; // Redirect to login page
+              } else {
+                alert('Failed to logout');
+              }
+            })
+            .catch(error => console.error('Error:', error));
+  }
 </script>
-
 </html>

@@ -8,31 +8,20 @@
 <h1>Post Details</h1>
 <p id="content"></p>
 <a href="/posts">Back to All Posts</a>
+<div class="post">
+  <p><strong>Posted by {{.post.Username}} | ID: {{.post.UserId}}</strong></p>
+  <p>{{.post.Content}}</p>
+  <p><small>Likes: {{.post.Likes}}</small></p>
+  <p><small>Created at: {{.post.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+  <p><small>Last updated: {{.post.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+  <div class="actions">
+    <a href="/posts/{{.post.ID}}/edit">Edit</a>
+    <form onsubmit="return deletePost(event, '{{.post.ID}}')" style="display:inline;">
+      <button type="submit">Delete</button>
+    </form>
+    <button onclick="likePost('{{.post.ID}}')">Like</button>
+  </div>
+</div>
 
-<script>
-  // Get post ID from the URL query string, e.g., /post.html?id=5
-  const urlParams = new URLSearchParams(window.location.search);
-  const postId = urlParams.get('id'); // Fetch ID dynamically from URL
-
-  // Token stored in localStorage (example)
-  const token = localStorage.getItem('authToken'); // Replace with your actual storage mechanism
-
-  // Fetch the post dynamically based on ID
-  fetch(`/api/posts/${postId}`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${token}`, // Attach token
-      'Content-Type': 'application/json'
-    }
-  })
-          .then(response => {
-            if (!response.ok) throw new Error('Unauthorized');
-            return response.json();
-          })
-          .then(data => {
-            document.getElementById('content').innerText = data.content; // Update content
-          })
-          .catch(error => console.error('Error:', error));
-</script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,18 +11,27 @@ import (
 var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
 func AuthRequired(c *gin.Context) {
-	session, _ := store.Get(c.Request, "session")
+	// Retrieve session
+	session, err := store.Get(c.Request, "session")
+	if err != nil {
+		// Handle session retrieval failure
+		fmt.Println("Error retrieving session:", err) // Log the error for debugging
+		c.Redirect(http.StatusFound, "/login")
+		c.Abort()
+		return
+	}
 
-	userID, ok := session.Values["user_id"].(uint)
-	if !ok || userID == 0 {
-
+	// Fetch user ID from session
+	userID, ok := session.Values["userID"].(uint) // Use 'int' instead of 'uint'
+	if !ok || userID == 0 {                       // Ensure user ID is valid
 		c.Redirect(http.StatusFound, "/login")
 		c.Abort()
 		return
 	}
 
 	// Store user ID in the context
-	c.Set("userID", userID)
+	c.Set("userID", uint(userID)) // Cast to 'uint' if needed later
 
+	// Continue processing
 	c.Next()
 }
