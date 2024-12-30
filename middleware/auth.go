@@ -14,24 +14,23 @@ func AuthRequired(c *gin.Context) {
 	// Retrieve session
 	session, err := store.Get(c.Request, "session")
 	if err != nil {
-		// Handle session retrieval failure
-		fmt.Println("Error retrieving session:", err) // Log the error for debugging
+
+		fmt.Println("Error retrieving session:", err)
 		c.Redirect(http.StatusFound, "/login")
 		c.Abort()
 		return
 	}
 
 	// Fetch user ID from session
-	userID, ok := session.Values["userID"].(uint) // Use 'int' instead of 'uint'
-	if !ok || userID == 0 {                       // Ensure user ID is valid
+	userID, ok := session.Values["userID"].(uint)
+	if !ok || userID == 0 {
 		c.Redirect(http.StatusFound, "/login")
 		c.Abort()
 		return
 	}
 
 	// Store user ID in the context
-	c.Set("userID", uint(userID)) // Cast to 'uint' if needed later
+	c.Set("userID", uint(userID))
 
-	// Continue processing
 	c.Next()
 }

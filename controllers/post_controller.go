@@ -152,8 +152,8 @@ func GetPost(c *gin.Context) {
 		Username  string    `json:"username"`
 		Content   string    `json:"content"`
 		Likes     int       `json:"likes"`
-		CreatedAt time.Time `json:"createdat"`
-		UpdatedAt time.Time `json:"updatedat"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
 	}
 
 	id := c.Param("id")

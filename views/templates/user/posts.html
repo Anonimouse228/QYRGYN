@@ -12,6 +12,7 @@
 <form method="get" action="/posts">
   <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
   <select name="sort">
+    <option value="created_at" {{if eq .sort "created_at"}}selected{{end}}>Date</option>
     <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
     <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
   </select>
@@ -29,7 +30,7 @@
   {{range .posts}}
     <li>
       <div class="post">
-        <p><strong>Posted by {{.Username}}| ID: {{.UserId}}</strong></p>
+        <p><strong>Posted by <a href="/users/{{.UserId}}">{{.Username}}</a>| ID: {{.UserId}}</strong></p>
         <p>{{.Content}}</p>
         <p><small>Likes: {{.Likes}}</small></p>
         <p><small>Created at: {{.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>

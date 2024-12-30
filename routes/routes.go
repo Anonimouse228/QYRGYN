@@ -45,7 +45,8 @@ func InitRoutes(router *gin.Engine) {
 	// Protected routes
 	auth := router.Group("/")
 	auth.Use(middleware.AuthRequired)
-	// Post routes with rate limiter
+
+	// Post routes
 	auth.GET("/posts", middleware.RateLimitMiddleware(rl), controllers.GetPosts)
 	auth.GET("/posts/new", middleware.RateLimitMiddleware(rl), controllers.NewPost)
 	auth.POST("/posts", middleware.RateLimitMiddleware(rl), controllers.CreatePost)
@@ -54,9 +55,14 @@ func InitRoutes(router *gin.Engine) {
 	auth.POST("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.UpdatePost)
 	auth.DELETE("/posts/:id", middleware.RateLimitMiddleware(rl), controllers.DeletePost)
 
+	// User thingies
 	auth.GET("/users/:id", controllers.GetUserProfile)
-	auth.GET("/users/edit/:id", controllers.UpdateUserPage)
-	auth.POST("/users/:id/edit", controllers.UpdateUserProfile)
+	auth.GET("/users/:id/edit", controllers.UpdateUserHTML)
+	auth.POST("/users/:id", controllers.UpdateUserProfile)
+
+	// Email system
+	auth.GET("/helpdesk", controllers.HelpdeskPageHTML)
+	auth.POST("/helpdesk", controllers.HelpdeskController)
 
 	// First assignment, first task
 	router.GET("task1", middleware.RateLimitMiddleware(rl), task1.Get)

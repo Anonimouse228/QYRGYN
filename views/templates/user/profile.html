@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profile</title>
-</head>
-<body>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
-    <title>Post Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
 </head>
 <body>
-<h1>User profile</h1>
+<h1>User Profile</h1>
 
 <div class="user">
-    <p><strong>Posted by {{.user.Username}}| ID: {{.user.ID}}</strong></p>
-    <p>Email {{.user.Email}}</p>
+    <p><strong>Username: {{.user.Username}} | ID: {{.user.ID}}</strong></p>
+    <p>Email: {{.user.Email}}</p>
     <p><small>Created at: {{.user.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
     <p><small>Last updated: {{.user.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
 </div>
-<a href="/users/edit/:id"></a>
-<a href="/posts">Back to All Posts</a>
 
+<a href="/helpdesk">Helpdesk</a>
+
+<!-- Show Edit button only if logged-in user matches profile ID -->
+{{if eq .user.ID .sessionUserID}}
+    <a href="/users/{{.user.ID}}/edit">Edit Profile</a>
+{{end}}
+
+<br>
+<a href="/posts">Back to All Posts</a>
 </body>
 </html>

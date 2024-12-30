@@ -73,7 +73,12 @@ func Login(c *gin.Context) {
 	// Create session
 	session, _ := store.Get(c.Request, "session")
 	session.Values["userID"] = user.ID
-	session.Save(c.Request, c.Writer)
+
+	err := session.Save(c.Request, c.Writer)
+	if err != nil {
+		println("SESSIONERERERERERERERR", err.Error())
+		return
+	}
 
 	// Redirect to posts
 	c.Redirect(http.StatusFound, "/posts")

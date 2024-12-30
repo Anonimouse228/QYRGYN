@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/helpdesk" method="post" enctype="multipart/form-data">
+  <label>Email:</label>
+  <input type="email" name="email" required>
+  <label>Subject:</label>
+  <input type="text" name="subject" required>
+  <label>Message:</label>
+  <textarea name="message" required></textarea>
+  <label>Attachments:</label>
+  <input type="file" name="attachments" multiple>
+  <button type="submit">Send</button>
+</form>
+
+</body>
+</html>
