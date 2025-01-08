@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"QYRGYN/database"
+	"QYRGYN/models"
 	"QYRGYN/util"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -65,4 +67,31 @@ func HelpdeskController(c *gin.Context) {
 
 	// Success response
 	c.JSON(http.StatusOK, gin.H{"message": "Email sent successfully!"})
+}
+
+func VerifyEmail(c *gin.Context) {
+	token := c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token is required"})
+		return
+	}
+
+	var user models.User
+	database.DB.Where("verification_token = ?", token).First(&user)
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	if user.Verified {
+		c.JSON(http.StatusOK, gin.H{"message": "Email already verified"})
+		return
+	}
+
+	// Update verification status
+	user.Verified = true
+	user.VerificationToken = "" // Clear the token
+	database.DB.Save(&user)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
 }

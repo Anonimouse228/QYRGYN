@@ -3,6 +3,9 @@ package controllers
 import (
 	"QYRGYN/database"
 	"QYRGYN/models"
+	"QYRGYN/util"
+	"crypto/rand"
+	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
@@ -11,15 +14,34 @@ import (
 
 var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
+func generateToken() (string, error) {
+	bytes := make([]byte, 32)
+	_, err := rand.Read(bytes)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(bytes), nil
+}
+
 func Register(c *gin.Context) {
 	// Get form data
 	username := c.PostForm("username")
 	email := c.PostForm("email")
 	password := c.PostForm("password")
 
+	println(username)
+	println(email)
+	println(password)
 	// Validate input
 	if username == "" || email == "" || password == "" {
 		c.HTML(http.StatusBadRequest, "register.html", gin.H{"error": "All fields are required."})
+		return
+	}
+
+	var existingUser models.User
+	database.DB.Where("email = ?", email).First(&existingUser)
+	if existingUser.ID != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already registered"})
 		return
 	}
 
@@ -30,15 +52,31 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	// Create email verification token
+	token, err := generateToken()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Token generation failed"})
+		return
+	}
+
 	// Create user
 	user := models.User{
-		Username: username,
-		Email:    email,
-		Password: string(hashedPassword),
+		Username:          username,
+		Email:             email,
+		Password:          string(hashedPassword),
+		VerificationToken: token,
+		Verified:          false,
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
 		c.HTML(http.StatusInternalServerError, "register.html", gin.H{"error": "Failed to register user."})
+		return
+	}
+
+	// Send verification email
+	err = util.SendVerificationEmail(user.Email, token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
 		return
 	}
 

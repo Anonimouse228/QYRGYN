@@ -1,7 +1,9 @@
 package main
 
 import (
+	"QYRGYN/config"
 	"QYRGYN/database"
+	"QYRGYN/middleware"
 	"QYRGYN/routes"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -9,9 +11,12 @@ import (
 
 func main() {
 
-	//database.InitDatabase(config.GetDatabaseURL())
-	database.InitDatabase("host=localhost port=5432 user=postgres dbname=qyrgyn sslmode=disable")
+	database.InitDatabase(config.GetDatabaseURL())
+
 	router := gin.Default()
+
+	middleware.SetupLogger()
+	router.Use(middleware.Logger())
 
 	log.Println("Server running on port localhost:8080/posts")
 

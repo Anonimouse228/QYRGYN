@@ -30,6 +30,8 @@ func InitRoutes(router *gin.Engine) {
 		}
 		c.Next()
 	})
+
+	// Create an instance of a rate limiter
 	rl := middleware.NewRateLimiter(2, 5)
 
 	// Load templates
@@ -41,7 +43,7 @@ func InitRoutes(router *gin.Engine) {
 	router.POST("/register", middleware.RateLimitMiddleware(rl), controllers.Register)
 	router.POST("/login", middleware.RateLimitMiddleware(rl), controllers.Login)
 	router.POST("/logout", middleware.RateLimitMiddleware(rl), controllers.Logout)
-
+	router.GET("/verify", middleware.RateLimitMiddleware(rl), controllers.VerifyEmail)
 	// Protected routes
 	auth := router.Group("/")
 	auth.Use(middleware.AuthRequired)
