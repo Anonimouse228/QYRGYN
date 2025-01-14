@@ -111,6 +111,7 @@ func Login(c *gin.Context) {
 	// Create session
 	session, _ := store.Get(c.Request, "session")
 	session.Values["userID"] = user.ID
+	session.Values["role"] = user.Role
 
 	err := session.Save(c.Request, c.Writer)
 	if err != nil {
@@ -118,8 +119,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Redirect to posts
-	c.Redirect(http.StatusFound, "/posts")
+	if user.Role == "admin" {
+		// Redirect to admin panel
+		c.Redirect(http.StatusFound, "/admin/posts")
+	} else {
+		// Redirect to posts
+		c.Redirect(http.StatusFound, "/posts")
+	}
 }
 
 func Logout(c *gin.Context) {

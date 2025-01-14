@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Users</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    a, button {
+      text-decoration: none;
+      color: white;
+      background-color: #007BFF;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button {
+      margin: 0;
+    }
+    button.delete {
+      background-color: #FF0000;
+    }
+    a:hover, button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+<h1>Users</h1>
+<a href="/users/new">Create New User</a>
+<br><br>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Role</th>
+    <th>Created At</th>
+    <th>Verified</th>
+  </tr>
+  </thead>
+  <tbody>
+  {{range .users}}
+  <tr>
+    <td>{{.ID}}</td>
+    <td>{{.Username}}</td>
+    <td>{{.Email}}</td>
+    <td>{{.Role}}</td>
+    <td>{{.CreatedAt.Format "Jan 02, 2006 15:04"}}</td>
+    <td>{{.Verified}}</td>
+    <td>
+      <a href="/users/{{.ID}}/edit">Edit</a>
+      <form action="/users/{{.ID}}" method="POST" style="display:inline;">
+        <input type="hidden" name="_method" value="DELETE">
+        <button type="submit" class="delete">Delete</button>
+      </form>
+      <a href="/users/{{.ID}}">View</a>
+    </td>
+  </tr>
+  {{end}}
+  </tbody>
+</table>
+</body>
+</html>

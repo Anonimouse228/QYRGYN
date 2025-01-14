@@ -17,11 +17,11 @@ func GetUsers(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": err.Error()})
 		return
 	}
-	c.HTML(http.StatusOK, "users.html", gin.H{"users": users})
+	c.HTML(http.StatusOK, "ADMIN_users.html", gin.H{"users": users})
 }
 
-func NewUserForm(c *gin.Context) {
-	c.HTML(http.StatusOK, "new_user.html", nil)
+func CreateUserHTML(c *gin.Context) {
+	c.HTML(http.StatusOK, "ADMIN_new_user.html", nil)
 }
 
 func CreateUser(c *gin.Context) {
@@ -39,7 +39,7 @@ func CreateUser(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/users")
 }
 
-func GetUser(c *gin.Context) {
+func AdminGetUser(c *gin.Context) {
 	var user models.User
 	id := c.Param("id")
 	if err := database.DB.First(&user, id).Error; err != nil {
@@ -49,31 +49,90 @@ func GetUser(c *gin.Context) {
 	c.HTML(http.StatusOK, "user.html", gin.H{"user": user})
 }
 
-func EditUser(c *gin.Context) {
+func AdminUpdateUserHTML(c *gin.Context) {
 	var user models.User
 	id := c.Param("id")
 	if err := database.DB.First(&user, id).Error; err != nil {
-		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "Post not found"})
+		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "User not found"})
 		return
 	}
-	c.HTML(http.StatusOK, "edit_user.html", gin.H{"user": user})
+	user.Password = ""
+	c.HTML(http.StatusOK, "ADMIN_edit_user.html", gin.H{"user": user})
 }
 
 func UpdateUser(c *gin.Context) {
-	var user models.User
-	id := c.Param("id")
-	if err := database.DB.First(&user, id).Error; err != nil {
-		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": err.Error()})
+	// Get user ID from URL parameter
+	userID := c.Param("id")
+
+	// Session validation
+	sessionUserID := c.GetUint("userID") // Directly get session user ID as uint
+	if sessionUserID == 0 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized access"})
 		return
 	}
 
-	if err := c.ShouldBind(&user); err != nil {
-		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
+	// Convert userID to uint for comparison
+	intUserID, err := strconv.Atoi(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
-	database.DB.Save(&user)
-	c.Redirect(http.StatusFound, "/users")
+	if uint(intUserID) != sessionUserID { // Check if user is editing their own profile
+		c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized access"})
+		return
+	}
+
+	// Input validation
+	var input struct {
+		Username string `form:"username"`
+		Email    string `form:"email"`
+		Password string `form:"password"`
+	}
+
+	// Bind form input
+	if err := c.ShouldBind(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	print(input.Username, "|", input.Email, "|", input.Password)
+	// Check required fields
+	if input.Username == "" || input.Email == "" || input.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username, email, and password are required"})
+		return
+	}
+
+	// Validate email format
+	//if !util.IsValidEmail(input.Email) {
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
+	//	return
+	//}
+
+	// Hash the password after validation
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	// Update user profile
+	result := database.DB.Model(&models.User{}).Where("id = ?", userID).Updates(models.User{
+		Username: input.Username,
+		Email:    input.Email,
+		Password: string(hashedPassword), // Convert byte slice to string
+	})
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile"})
+		return
+	}
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found or no changes made"})
+		return
+	}
+
+	// Redirect to user profile page
+	c.Redirect(http.StatusFound, "/users/"+userID)
 }
 
 func DeleteUser(c *gin.Context) {
