@@ -34,7 +34,12 @@ func main() {
 
 	log.Println("Server running on port localhost:8080/posts")
 
-	err := router.Run(":8080")
+	port := config.GetPort()
+	if port == "" {
+		log.Println("No port configured")
+		port = ":8080"
+	}
+	err := router.Run(port)
 	if err != nil {
 		log.Fatal(err)
 	}

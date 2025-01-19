@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"QYRGYN/config"
 	"QYRGYN/database"
 	"QYRGYN/models"
 	"QYRGYN/util"
@@ -9,10 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 )
 
-var store = sessions.NewCookieStore([]byte("your-secret-key"))
+var store = sessions.NewCookieStore([]byte(config.GetSecretKey()))
 
 func generateToken() (string, error) {
 	bytes := make([]byte, 32)
@@ -80,7 +82,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// Redirect to login
+	// Redirect to log in
 	c.Redirect(http.StatusFound, "/login")
 }
 
@@ -131,7 +133,11 @@ func Login(c *gin.Context) {
 func Logout(c *gin.Context) {
 	session, _ := store.Get(c.Request, "session")
 	delete(session.Values, "userID")
-	session.Save(c.Request, c.Writer)
+	err := session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Fatal(err)
+		return ///////////////////ТУТ ХЗ ЧТО СДЕЛАЛ ААААААААААААААААААААААААААААААААААААА
+	}
 
 	c.Redirect(http.StatusFound, "/login")
 }
