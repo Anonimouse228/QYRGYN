@@ -39,7 +39,7 @@ func InitRoutes(router *gin.Engine) {
 	router.Use(middleware.RateLimitMiddleware(rl))
 	// Admin stuff
 	adminRoutes := router.Group("/admin")
-	adminRoutes.Use(middleware.RequireAdmin) // Middleware for role check
+	adminRoutes.Use(middleware.RequireAdmin)
 	adminRoutes.Use(middleware.AuthRequired)
 	adminRoutes.Use(middleware.RateLimitMiddleware(rl))
 	{
@@ -50,8 +50,15 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
 		adminRoutes.DELETE("/users/:id", controllers.DeleteUser)
-		// Add other resource routes here
+		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
+		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
+
 	}
+
+	////////////// TEMPORARYYYY\
+	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
+	//router.POST("/execute-query", controllers.ExecuteQuery)
+	//////////////
 
 	// Register and login
 	router.GET("/register", controllers.RegisterHTML)

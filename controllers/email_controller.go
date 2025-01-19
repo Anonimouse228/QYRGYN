@@ -24,7 +24,7 @@ func HelpdeskController(c *gin.Context) {
 
 	// Validate input
 	if email == "" || subject == "" || message == "" {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "All fields are required"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "All fields are required"})
 		return
 	}
 
@@ -32,7 +32,7 @@ func HelpdeskController(c *gin.Context) {
 	var attachments []string
 	form, err := c.MultipartForm()
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to parse form data"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Failed to parse form data"})
 		return
 	}
 	files := form.File["attachments"]
@@ -42,7 +42,7 @@ func HelpdeskController(c *gin.Context) {
 		// Check file extension (basic security)
 		ext := strings.ToLower(filepath.Ext(file.Filename))
 		if ext != ".jpg" && ext != ".png" && ext != ".pdf" {
-			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid file type"})
+			c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid file type"})
 			return
 		}
 
@@ -66,32 +66,32 @@ func HelpdeskController(c *gin.Context) {
 	}
 
 	// Success response
-	c.JSON(http.StatusOK, gin.H{"message": "Email sent successfully!"})
+	c.HTML(http.StatusOK, "error.html", gin.H{"error": "Email sent successfully!"})
 }
 
 func VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Token is required"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Token is required"})
 		return
 	}
 
 	var user models.User
 	database.DB.Where("verification_token = ?", token).First(&user)
 	if user.ID == 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid token"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid token"})
 		return
 	}
 
 	if user.Verified {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Email already verified"})
+		c.HTML(http.StatusOK, "error.html", gin.H{"error": "Email already verified"})
 		return
 	}
 
 	// Update verification status
 	user.Verified = true
-	user.VerificationToken = "" // Clear the token
+	//user.VerificationToken = "" // Clear the token
 	database.DB.Save(&user)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+	c.HTML(http.StatusOK, "error.html", gin.H{"error": "Email verified successfully"})
 }

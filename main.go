@@ -1,4 +1,4 @@
-package main_directory
+package main
 
 import (
 	"QYRGYN/config"
@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func SetupRouter() *gin.Engine {
+func SetupRoutes() *gin.Engine {
 	database.InitDatabase(config.GetDatabaseURL())
 
 	router := gin.Default()
@@ -26,28 +26,21 @@ func SetupRouter() *gin.Engine {
 		c.Next()
 	})
 	return router
+
 }
 
-//func main() {
-//	router := SetupRouter()
-//
-//	log.Println("Server running on port localhost:8080/posts")
-//	err := router.Run(config.GetPort())
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//}
-
 func main() {
-	port := config.GetPort()
-	if port == "" {
-		port = "8080" // Default port for local development
-	}
+	router := SetupRoutes()
 
-	router := SetupRouter()
-	log.Println("Server running on port " + port)
+	port := config.GetPort()
+	println("Port: ", port)
+	if port == "" {
+		log.Println("No port configured")
+		port = "8080"
+	}
 	err := router.Run(":" + port)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }

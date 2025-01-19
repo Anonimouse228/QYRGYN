@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 )
 
@@ -42,7 +43,7 @@ func Register(c *gin.Context) {
 	var existingUser models.User
 	database.DB.Where("email = ?", email).First(&existingUser)
 	if existingUser.ID != 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Email already registered."})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Email already registered"})
 		return
 	}
 
@@ -81,7 +82,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	// Redirect to login
+	// Redirect to log in
 	c.Redirect(http.StatusFound, "/login")
 }
 
@@ -132,7 +133,11 @@ func Login(c *gin.Context) {
 func Logout(c *gin.Context) {
 	session, _ := store.Get(c.Request, "session")
 	delete(session.Values, "userID")
-	session.Save(c.Request, c.Writer)
+	err := session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Fatal(err)
+		return ///////////////////ТУТ ХЗ ЧТО СДЕЛАЛ ААААААААААААААААААААААААААААААААААААА
+	}
 
 	c.Redirect(http.StatusFound, "/login")
 }

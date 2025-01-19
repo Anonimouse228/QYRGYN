@@ -67,19 +67,19 @@ func UpdateUser(c *gin.Context) {
 	// Session validation
 	sessionUserID := c.GetUint("userID") // Directly get session user ID as uint
 	if sessionUserID == 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Unauthorized access"})
+		c.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Unauthorized access"})
 		return
 	}
 
 	// Convert userID to uint for comparison
 	intUserID, err := strconv.Atoi(userID)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid user ID"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid user ID"})
 		return
 	}
 
 	if uint(intUserID) != sessionUserID { // Check if user is editing their own profile
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Unauthorized access"})
+		c.HTML(http.StatusForbidden, "error.html", gin.H{"error": "Unauthorized access"})
 		return
 	}
 
@@ -92,17 +92,17 @@ func UpdateUser(c *gin.Context) {
 
 	// Bind form input
 	if err := c.ShouldBind(&input); err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Binding error: " + err.Error()})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
-
+	print(input.Username, "|", input.Email, "|", input.Password)
 	// Check required fields
 	if input.Username == "" || input.Email == "" || input.Password == "" {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Username, email, and password are required"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Username, email, and password are required"})
 		return
 	}
 
-	// Validate email format   TODO: email format validation
+	// Validate email format
 	//if !util.IsValidEmail(input.Email) {
 	//	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
 	//	return
@@ -123,11 +123,11 @@ func UpdateUser(c *gin.Context) {
 	})
 
 	if result.Error != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "failed to update profile"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update profile"})
 		return
 	}
 	if result.RowsAffected == 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "User not found or no changes made"})
+		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "User not found or no changes made"})
 		return
 	}
 
@@ -142,6 +142,7 @@ func DeleteUser(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Could not delete user"})
 		return
 	}
+	c.Redirect(http.StatusFound, "/users")
 	c.Redirect(http.StatusFound, "/users")
 }
 
@@ -183,19 +184,20 @@ func UpdateUserProfile(c *gin.Context) {
 	// Session validation
 	sessionUserID := c.GetUint("userID") // Directly get session user ID as uint
 	if sessionUserID == 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Unauthorized access"})
+
+		c.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "Unauthorized access"})
 		return
 	}
 
 	// Convert userID to uint for comparison
 	intUserID, err := strconv.Atoi(userID)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid user ID"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid user ID"})
 		return
 	}
 
 	if uint(intUserID) != sessionUserID { // Check if user is editing their own profile
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Unauthorized access"})
+		c.HTML(http.StatusForbidden, "error.html", gin.H{"error": "Unauthorized access"})
 		return
 	}
 
@@ -208,19 +210,19 @@ func UpdateUserProfile(c *gin.Context) {
 
 	// Bind form input
 	if err := c.ShouldBind(&input); err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": err.Error()})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": err.Error()})
 		return
 	}
 	print(input.Username, "|", input.Email, "|", input.Password)
 	// Check required fields
 	if input.Username == "" || input.Email == "" || input.Password == "" {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Username, email, and password are required"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Username or email and password are required"})
 		return
 	}
 
 	// Validate email format
 	//if !util.IsValidEmail(input.Email) {
-	//			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid Email format"})
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
 	//	return
 	//}
 
@@ -239,11 +241,13 @@ func UpdateUserProfile(c *gin.Context) {
 	})
 
 	if result.Error != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "failed to update profile"})
+
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update profile"})
 		return
 	}
 	if result.RowsAffected == 0 {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "User not found or no changes made"})
+
+		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "User not found or no changes made"})
 		return
 	}
 
