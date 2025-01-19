@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+func ExecuteQueryHTML(c *gin.Context) {
+	c.HTML(http.StatusOK, "SQL_ENTRY.html", nil)
+}
+
 func ExecuteQuery(c *gin.Context) {
 	query := c.DefaultPostForm("sqlQuery", "")
 
@@ -23,27 +27,39 @@ func ExecuteQuery(c *gin.Context) {
 	}
 	defer rows.Close()
 
+	// Fetch columns
+	columns, err := rows.Columns()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to fetch columns: %v", err)})
+		return
+	}
+
+	// Prepare result data
 	var result []map[string]interface{}
 	for rows.Next() {
-		columns, _ := rows.Columns()
 		values := make([]interface{}, len(columns))
+		valuePointers := make([]interface{}, len(columns))
 		for i := range values {
-			values[i] = new(interface{})
+			valuePointers[i] = &values[i]
 		}
 
-		err := rows.Scan(values...)
-		if err != nil {
+		if err := rows.Scan(valuePointers...); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Failed to scan result: %v", err)})
 			return
 		}
 
 		row := make(map[string]interface{})
 		for i, col := range columns {
-			row[col] = *(values[i].(*interface{}))
+			row[col] = values[i]
 		}
 		result = append(result, row)
 	}
 
-	// Return the query results
-	c.JSON(http.StatusOK, gin.H{"result": result})
+	// Return readable query results
+	c.JSON(http.StatusOK, gin.H{
+		"query":   query,
+		"status":  "success",
+		"columns": columns,
+		"rows":    result,
+	})
 }
