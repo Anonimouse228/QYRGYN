@@ -50,7 +50,7 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
 		adminRoutes.DELETE("/users/:id", controllers.DeleteUser)
-		// Add other resource routes here
+
 	}
 
 	////////////// TEMPORARYYYY\
