@@ -75,7 +75,7 @@ cd qyrgyn
 Ensure you have Go installed.
 Navigate to the backend folder:
 cd backend  
-go run main_directory.go
+go run main.go
 ```
 
 ### 3️⃣ Start the Frontend
