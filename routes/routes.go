@@ -53,6 +53,10 @@ func InitRoutes(router *gin.Engine) {
 		// Add other resource routes here
 	}
 
+	////////////// TEMPORARYYYY
+	router.POST("/execute-query", controllers.ExecuteQuery)
+	//////////////
+
 	// Register and login
 	router.GET("/register", controllers.RegisterHTML)
 	router.GET("/login", controllers.LoginHTML)
