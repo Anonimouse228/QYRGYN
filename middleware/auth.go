@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"QYRGYN/config"
 	"QYRGYN/database"
 	"QYRGYN/models"
 	"fmt"
@@ -11,7 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-var store = sessions.NewCookieStore([]byte(config.GetSecretKey()))
+var store = sessions.NewCookieStore([]byte("your-secret-key"))
 
 func AuthRequired(c *gin.Context) {
 	// Retrieve session

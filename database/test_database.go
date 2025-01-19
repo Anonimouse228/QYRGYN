@@ -9,15 +9,15 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-var DB *gorm.DB
+var test_DB *gorm.DB
 
-func InitDatabase(connectionString string) {
+func InitTestDatabase(connectionString string) {
 	var err error
-	DB, err = gorm.Open("postgres", connectionString)
+	test_DB, err = gorm.Open("postgres", connectionString)
 
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v", err)
 	}
 
-	DB.AutoMigrate(&models.User{}, &models.Post{})
+	test_DB.AutoMigrate(&models.User{}, &models.Post{})
 }
