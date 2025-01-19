@@ -43,7 +43,7 @@ func Register(c *gin.Context) {
 	var existingUser models.User
 	database.DB.Where("email = ?", email).First(&existingUser)
 	if existingUser.ID != 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already registered"})
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Email already registered"})
 		return
 	}
 
@@ -57,7 +57,7 @@ func Register(c *gin.Context) {
 	// Create email verification token
 	token, err := generateToken()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Token generation failed"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Token generation failed"})
 		return
 	}
 
@@ -78,7 +78,7 @@ func Register(c *gin.Context) {
 	// Send verification email
 	err = util.SendVerificationEmail(user.Email, token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to send verification email"})
 		return
 	}
 

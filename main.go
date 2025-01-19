@@ -32,14 +32,13 @@ func SetupRoutes() *gin.Engine {
 func main() {
 	router := SetupRoutes()
 
-	log.Println("Server running on port localhost:8080/posts")
-
 	port := config.GetPort()
+	println("Port: ", port)
 	if port == "" {
 		log.Println("No port configured")
-		port = ":8080"
+		port = "8080"
 	}
-	err := router.Run(port)
+	err := router.Run(":" + port)
 	if err != nil {
 		log.Fatal(err)
 	}
