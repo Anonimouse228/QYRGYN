@@ -2,3 +2,11 @@
 {"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/login","status":404,"time":"2025-01-19T14:58:55+05:00"}
 {"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/posts","status":404,"time":"2025-01-19T14:58:55+05:00"}
 {"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"GET","msg":"Request details","path":"/posts","status":200,"time":"2025-01-19T14:58:55+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/register","status":404,"time":"2025-01-19T18:58:51+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/login","status":404,"time":"2025-01-19T18:58:52+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/posts","status":404,"time":"2025-01-19T18:58:52+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"GET","msg":"Request details","path":"/posts","status":200,"time":"2025-01-19T18:58:52+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/register","status":404,"time":"2025-01-19T19:26:48+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/login","status":404,"time":"2025-01-19T19:26:48+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"POST","msg":"Request details","path":"/posts","status":404,"time":"2025-01-19T19:26:48+05:00"}
+{"agent":"","error":"","ip":"","latency":"0s","level":"info","method":"GET","msg":"Request details","path":"/posts","status":200,"time":"2025-01-19T19:26:48+05:00"}
