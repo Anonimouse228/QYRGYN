@@ -21,3 +21,21 @@ func InitDatabase(connectionString string) {
 
 	DB.AutoMigrate(&models.User{}, &models.Post{})
 }
+
+func InitTestDatabase(connectionString string) {
+	var err error
+	DB, err = gorm.Open("postgres", connectionString)
+
+	if err != nil {
+		log.Fatalf("Could not connect to the database: %v", err)
+	}
+
+	DB.AutoMigrate(&models.User{}, &models.Post{})
+}
+
+func CloseTestDatabase() {
+	err := DB.Close()
+	if err != nil {
+		log.Fatalf("Could not close the database: %v", err)
+	}
+}

@@ -24,7 +24,7 @@ func HelpdeskController(c *gin.Context) {
 
 	// Validate input
 	if email == "" || subject == "" || message == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "All fields are required"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "All fields are required"})
 		return
 	}
 
@@ -32,7 +32,7 @@ func HelpdeskController(c *gin.Context) {
 	var attachments []string
 	form, err := c.MultipartForm()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse form data"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to parse form data"})
 		return
 	}
 	files := form.File["attachments"]
@@ -42,14 +42,14 @@ func HelpdeskController(c *gin.Context) {
 		// Check file extension (basic security)
 		ext := strings.ToLower(filepath.Ext(file.Filename))
 		if ext != ".jpg" && ext != ".png" && ext != ".pdf" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file type"})
+			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid file type"})
 			return
 		}
 
 		// Save file
 		filename := filepath.Join("uploads", file.Filename)
 		if err := c.SaveUploadedFile(file, filename); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "File upload failed"})
+			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "File upload failed"})
 			return
 		}
 		attachments = append(attachments, filename)
@@ -61,7 +61,7 @@ func HelpdeskController(c *gin.Context) {
 	// Send email
 	err = util.SendEmail("suhansun13@gmail.com", subject, fullMessage, attachments)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to send email"})
 		return
 	}
 
@@ -72,19 +72,19 @@ func HelpdeskController(c *gin.Context) {
 func VerifyEmail(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Token is required"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Token is required"})
 		return
 	}
 
 	var user models.User
 	database.DB.Where("verification_token = ?", token).First(&user)
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid token"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Invalid token"})
 		return
 	}
 
 	if user.Verified {
-		c.JSON(http.StatusOK, gin.H{"message": "Email already verified"})
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Email already verified"})
 		return
 	}
 
