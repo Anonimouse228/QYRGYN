@@ -50,12 +50,14 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
 		adminRoutes.DELETE("/users/:id", controllers.DeleteUser)
+		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
+		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
 
 	}
 
 	////////////// TEMPORARYYYY\
-	router.GET("/execute-query", controllers.ExecuteQueryHTML)
-	router.POST("/execute-query", controllers.ExecuteQuery)
+	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
+	//router.POST("/execute-query", controllers.ExecuteQuery)
 	//////////////
 
 	// Register and login
