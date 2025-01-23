@@ -36,7 +36,7 @@ func AuthRequired(c *gin.Context) {
 	var user models.User
 	database.DB.First(&user, userID)
 	if !user.Verified {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Email is not verified"})
+		c.HTML(http.StatusForbidden, "error.html", gin.H{"error": "Email is not verified"})
 		c.Abort()
 		return
 	}

@@ -10,16 +10,22 @@
 <a href="/posts/new">Create New Post</a>
 <hr/>
 <form method="get" action="/posts">
-  <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
-  <select name="sort">
-    <option value="created_at" {{if eq .sort "created_at"}}selected{{end}}>Date</option>
-    <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
-    <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
-  </select>
-  <select name="order">
-    <option value="asc" {{if eq .order "asc"}}selected{{end}}>Ascending</option>
-    <option value="desc" {{if eq .order "desc"}}selected{{end}}>Descending</option>
-  </select>
+  <label>
+    <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
+  </label>
+  <label>
+    <select name="sort">
+      <option value="created_at" {{if eq .sort "created_at"}}selected{{end}}>Date</option>
+      <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
+      <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
+    </select>
+  </label>
+  <label>
+    <select name="order">
+      <option value="asc" {{if eq .order "asc"}}selected{{end}}>Ascending</option>
+      <option value="desc" {{if eq .order "desc"}}selected{{end}}>Descending</option>
+    </select>
+  </label>
   <input type="hidden" name="page" value="{{.page}}">
   <input type="hidden" name="pageSize" value="5">
   <button type="submit">Filter</button>
@@ -37,11 +43,9 @@
         <p><small>Last updated: {{.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
         <p><a href="/posts/{{.ID}}">See post</a></p>
         <div class="actions">
-          <a href="/posts/{{.ID}}/edit">Edit</a>
-          <form onsubmit="return deletePost(event, '{{.ID}}')" style="display:inline;">
-            <button type="submit">Delete</button>
+          <form action="/posts/{{.ID}}/like" method="post">
+            <input type="submit" value="♥" />
           </form>
-          <button onclick="likePost('{{.ID}}')">Like</button>
         </div>
       </div>
     </li>

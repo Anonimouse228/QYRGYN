@@ -7,6 +7,7 @@ import (
 	"QYRGYN/util"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"net/http"
 )
 
 func InitRoutes(router *gin.Engine) {
@@ -55,30 +56,28 @@ func InitRoutes(router *gin.Engine) {
 
 	}
 
-	////////////// TEMPORARYYYY\
-	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
-	//router.POST("/execute-query", controllers.ExecuteQuery)
-	//////////////
-
 	// Register and login
+	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/login") })
 	router.GET("/register", controllers.RegisterHTML)
 	router.GET("/login", controllers.LoginHTML)
 	router.POST("/register", controllers.Register)
 	router.POST("/login", controllers.Login)
 	router.POST("/logout", controllers.Logout)
 	router.GET("/verify", controllers.VerifyEmail)
+
 	// Protected routes
 	auth := router.Group("/")
 	auth.Use(middleware.AuthRequired)
 
 	// Post routes
 	auth.GET("/posts", controllers.GetPosts)
-	auth.GET("/posts/new", controllers.NewPost)
+	auth.GET("/posts/new", controllers.NewPostHTML)
 	auth.POST("/posts", controllers.CreatePost)
-	auth.GET("/posts/:id/edit", controllers.EditPost)
+	auth.GET("/posts/:id/edit", controllers.UpdatePostHTML)
 	auth.GET("/posts/:id", controllers.GetPost)
 	auth.POST("/posts/:id", controllers.UpdatePost)
 	auth.DELETE("/posts/:id", controllers.DeletePost)
+	auth.POST("/posts/:id/like", controllers.ToggleLike)
 
 	// User thingies
 	auth.GET("/users/:id", controllers.GetUserProfile)

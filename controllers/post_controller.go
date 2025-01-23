@@ -3,8 +3,10 @@ package controllers
 import (
 	"QYRGYN/database"
 	"QYRGYN/models"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,12 +17,16 @@ func CreatePost(c *gin.Context) {
 
 	userID, exists := c.Get("userID")
 	if !exists {
-
-		c.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "In case somehow the userID is not set in the context (shouldn't happen)"})
+		c.HTML(http.StatusUnauthorized, "error.html", gin.H{"error": "In case somehow the userID is not set in the context (shouldn't happen lol)"})
 		return
 	}
 
 	post.UserId = int(userID.(uint))
+
+	if len(post.Content) > 228 {
+		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Post content too long. Should be < 228"})
+		return
+	}
 
 	if err := c.ShouldBind(&post); err != nil {
 		fmt.Println("Binding error:", err)
@@ -130,11 +136,12 @@ func GetPosts(c *gin.Context) {
 		"order":      c.DefaultQuery("order", "asc"),
 	})
 }
-func NewPost(c *gin.Context) {
+
+func NewPostHTML(c *gin.Context) {
 	c.HTML(http.StatusOK, "new_post.html", nil)
 }
 
-func EditPost(c *gin.Context) {
+func UpdatePostHTML(c *gin.Context) {
 	var post models.Post
 	id := c.Param("id")
 	if err := database.DB.First(&post, id).Error; err != nil {
@@ -145,7 +152,7 @@ func EditPost(c *gin.Context) {
 }
 
 func GetPost(c *gin.Context) {
-	// Define a custom struct to include username
+	// A custom struct with username
 	var post struct {
 		ID        int       `json:"id"`
 		UserId    int       `json:"userid"`
@@ -158,12 +165,12 @@ func GetPost(c *gin.Context) {
 
 	id := c.Param("id")
 
-	// Perform join query with GORM
+	// Join to display not authorId but his username
 	err := database.DB.Table("posts").
 		Select("posts.id, posts.user_id, posts.content, posts.likes, posts.created_at, posts.updated_at, users.username").
 		Joins("LEFT JOIN users ON users.id = posts.user_id").
 		Where("posts.id = ?", id).
-		First(&post).Error // Pass a pointer to the struct
+		First(&post).Error
 	if err != nil {
 		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "Post not found"})
 		return
@@ -178,6 +185,11 @@ func UpdatePost(c *gin.Context) {
 	id := c.Param("id")
 	if err := database.DB.First(&post, id).Error; err != nil {
 		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(post.Content) > 228 {
+		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Content too large. Should be < 228"})
 		return
 	}
 
@@ -197,5 +209,60 @@ func DeletePost(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Could not delete post"})
 		return
 	}
+	c.Redirect(http.StatusFound, "/posts")
+}
+
+func ToggleLike(c *gin.Context) {
+	userID, _ := c.Get("userID")
+
+	postID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid post ID"})
+		return
+	}
+
+	// Check if the user already liked the post
+	var like models.Like
+	err = database.DB.Where("post_id = ? AND user_id = ?", postID, userID).First(&like).Error
+	if err == nil {
+		// If the like exists, remove it
+		if err := database.DB.Delete(&like).Error; err != nil {
+			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to remove like"})
+			return
+		}
+
+		// Decrement the likes count in the post table
+		if err := database.DB.Model(&models.Post{}).
+			Where("id = ?", postID).
+			Update("likes", gorm.Expr("likes - 1")).Error; err != nil {
+			c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update post likes"})
+			return
+		}
+
+		c.Redirect(http.StatusFound, "/posts")
+		return
+	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Database error"})
+		return
+	}
+
+	// If the like does not exist, add a new one
+	newLike := models.Like{
+		PostId: uint(postID),
+		UserId: userID.(uint),
+	}
+	if err := database.DB.Create(&newLike).Error; err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to add like"})
+		return
+	}
+
+	// Increment the likes count in the post table
+	if err := database.DB.Model(&models.Post{}).
+		Where("id = ?", postID).
+		Update("likes", gorm.Expr("likes + 1")).Error; err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update post likes"})
+		return
+	}
+
 	c.Redirect(http.StatusFound, "/posts")
 }
