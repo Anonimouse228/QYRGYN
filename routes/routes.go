@@ -56,6 +56,11 @@ func InitRoutes(router *gin.Engine) {
 
 	}
 
+	////////////// TEMPORARYYYY\
+	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
+	//router.POST("/execute-query", controllers.ExecuteQuery)
+	//////////////
+
 	// Register and login
 	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/login") })
 	router.GET("/register", controllers.RegisterHTML)
