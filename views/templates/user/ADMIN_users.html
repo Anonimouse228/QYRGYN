@@ -1,77 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Users</title>
   <style>
-    table {
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 100%;
-      border-collapse: collapse;
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    table, th, td {
-      border: 1px solid black;
+
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
     }
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
+
     a, button {
       text-decoration: none;
       color: white;
       background-color: #007BFF;
       border: none;
-      padding: 5px 10px;
+      padding: 10px 20px;
       border-radius: 5px;
       cursor: pointer;
+      margin: 5px;
     }
-    button {
-      margin: 0;
-    }
+
     button.delete {
       background-color: #FF0000;
     }
+
     a:hover, button:hover {
       opacity: 0.9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    form {
+      display: inline;
     }
   </style>
 </head>
 <body>
-<h1>Users</h1>
-<a href="/users/new">Create New User</a>
-<br><br>
-<table>
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>Username</th>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Created At</th>
-    <th>Verified</th>
-  </tr>
-  </thead>
-  <tbody>
-  {{range .users}}
-  <tr>
-    <td>{{.ID}}</td>
-    <td>{{.Username}}</td>
-    <td>{{.Email}}</td>
-    <td>{{.Role}}</td>
-    <td>{{.CreatedAt.Format "Jan 02, 2006 15:04"}}</td>
-    <td>{{.Verified}}</td>
-    <td>
-      <a href="/users/{{.ID}}/edit">Edit</a>
-      <form action="/users/{{.ID}}" method="POST" style="display:inline;">
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit" class="delete">Delete</button>
-      </form>
-      <a href="/users/{{.ID}}">View</a>
-    </td>
-  </tr>
-  {{end}}
-  </tbody>
-</table>
+<div class="container">
+  <h1>Users</h1>
+  <a href="/users/new">Create New User</a>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>Created At</th>
+      <th>Verified</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .users}}
+    <tr>
+      <td>{{.ID}}</td>
+      <td>{{.Username}}</td>
+      <td>{{.Email}}</td>
+      <td>{{.Role}}</td>
+      <td>{{.CreatedAt.Format "Jan 02, 2006 15:04"}}</td>
+      <td>{{.Verified}}</td>
+      <td class="actions">
+        <a href="/users/{{.ID}}/edit">Edit</a>
+        <form action="/users/{{.ID}}" method="POST">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="delete">Delete</button>
+        </form>
+        <a href="/users/{{.ID}}">View</a>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+</div>
 </body>
 </html>

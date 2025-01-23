@@ -1,42 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Posts</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    button, .actions a, .actions button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    button:hover, .actions a:hover, .actions button:hover {
+      opacity: 0.8;
+    }
+
+    form {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .post {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: rgba(241, 241, 241, 0.24);
+      /* Remove or increase width */
+       width: 80%;
+      word-wrap: break-word;
+    }
+
+    .post p {
+      margin: 10px 0;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .pagination a {
+      margin: 0 10px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+
+    .pagination a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-<h1>All Posts</h1>
-<button onclick="logout()">Logout</button>
-<a href="/posts/new">Create New Post</a>
-<hr/>
-<form method="get" action="/posts">
-  <label>
-    <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
-  </label>
-  <label>
-    <select name="sort">
-      <option value="created_at" {{if eq .sort "created_at"}}selected{{end}}>Date</option>
-      <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
-      <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
-    </select>
-  </label>
-  <label>
-    <select name="order">
-      <option value="asc" {{if eq .order "asc"}}selected{{end}}>Ascending</option>
-      <option value="desc" {{if eq .order "desc"}}selected{{end}}>Descending</option>
-    </select>
-  </label>
-  <input type="hidden" name="page" value="{{.page}}">
-  <input type="hidden" name="pageSize" value="5">
-  <button type="submit">Filter</button>
-</form>
+<div class="container">
+  <h1>All Posts</h1>
+  <button onclick="logout()">Logout</button>
+  <a href="/posts/new">Create New Post</a>
+  <hr/>
+  <form method="get" action="/posts">
+    <label>
+      <input type="text" name="content" placeholder="Search by content" value="{{.content}}">
+    </label>
+    <label>
+      <select name="sort">
+        <option value="created_at" {{if eq .sort "created_at"}}selected{{end}}>Date</option>
+        <option value="id" {{if eq .sort "id"}}selected{{end}}>ID</option>
+        <option value="content" {{if eq .sort "content"}}selected{{end}}>Content</option>
+      </select>
+    </label>
+    <label>
+      <select name="order">
+        <option value="asc" {{if eq .order "asc"}}selected{{end}}>Ascending</option>
+        <option value="desc" {{if eq .order "desc"}}selected{{end}}>Descending</option>
+      </select>
+    </label>
+    <label>
+      <select name="pageSize">
+        <option value="5" {{if eq .pageSize "5"}}selected{{end}}>5</option>
+        <option value="10" {{if eq .pageSize "10"}}selected{{end}}>10</option>
+        <option value="20" {{if eq .pageSize "15"}}selected{{end}}>20</option>
+      </select>
+    </label>
+    <input type="hidden" name="page" value="{{.page}}">
+    <button type="submit">Filter</button>
+  </form>
 
-
-<ul>
-  {{range .posts}}
+  <ul>
+    {{range .posts}}
     <li>
       <div class="post">
-        <p><strong>Posted by <a href="/users/{{.UserId}}">{{.Username}}</a>| ID: {{.UserId}}</strong></p>
+        <p><strong>Posted by <a href="/users/{{.UserId}}">{{.Username}}</a> | ID: {{.UserId}}</strong></p>
         <p>{{.Content}}</p>
         <p><small>Likes: {{.Likes}}</small></p>
         <p><small>Created at: {{.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
@@ -49,23 +160,22 @@
         </div>
       </div>
     </li>
-  {{end}}
-</ul>
+    {{end}}
+  </ul>
 
-<div>
-  {{if gt .page 1}}
-  <a href="?page={{sub .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Previous</a>
-  {{end}}
 
-  Page {{.page}} of {{.totalPages}}
+  <div class="pagination">
+    {{if gt .page 1}}
+    <a href="?page={{sub .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Previous</a>
+    {{end}}
 
-  {{if lt .page .totalPages}}
-  <a href="?page={{add .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Next</a>
-  {{end}}
+    Page {{.page}} of {{.totalPages}}
+
+    {{if lt .page .totalPages}}
+    <a href="?page={{add .page 1}}&content={{.content}}&sort={{.sort}}&order={{.order}}">Next</a>
+    {{end}}
+  </div>
 </div>
-
-
-
 </body>
 
 <script>

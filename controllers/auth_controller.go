@@ -147,7 +147,7 @@ func Login(c *gin.Context) {
 
 	if user.Role == "admin" {
 		// Redirect to admin panel
-		c.Redirect(http.StatusFound, "/admin/posts")
+		c.Redirect(http.StatusFound, "/admin/users")
 	} else {
 		// Redirect to posts
 		c.Redirect(http.StatusFound, "/posts")

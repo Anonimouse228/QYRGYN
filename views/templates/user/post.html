@@ -2,26 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post Details</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    .post {
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+
+    .post p {
+      margin: 10px 0;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actions a, .actions button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .actions button {
+      background-color: #f44336;
+    }
+
+    .actions button:hover, .actions a:hover {
+      opacity: 0.8;
+    }
+
+    #like {
+      background-color: #f44336;
+      width : 60px;
+      height: 40px;
+      border-radius: 4px;
+      color: white;
+      display: inline-flex;
+    }
+  </style>
 </head>
 <body>
-<h1>Post Details</h1>
-<p id="content"></p>
-<a href="/posts">Back to All Posts</a>
-<div class="post">
-  <p><strong>Posted by {{.post.Username}} | ID: {{.post.UserId}}</strong></p>
-  <p>{{.post.Content}}</p>
-  <p><small>Likes: {{.post.Likes}}</small></p>
-  <p><small>Created at: {{.post.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
-  <p><small>Last updated: {{.post.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
-  <div class="actions">
-    <a href="/posts/{{.post.ID}}/edit">Edit</a>
-    <form onsubmit="return deletePost(event, '{{.post.ID}}')" style="display:inline;">
-      <button type="submit">Delete</button>
-    </form>
-    <button onclick="likePost('{{.post.ID}}')">Like</button>
+<div class="container">
+  <h1>Post Details</h1>
+  <div class="post">
+    <p><strong>Posted by {{.post.Username}} | ID: {{.post.UserId}}</strong></p>
+    <p>{{.post.Content}}</p>
+    <p><small>Likes: {{.post.Likes}}</small></p>
+    <p><small>Created at: {{.post.CreatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+    <p><small>Last updated: {{.post.UpdatedAt.Format "Jan 02, 2006 15:04"}}</small></p>
+    <div class="actions">
+      <a href="/posts/{{.post.ID}}/edit">Edit</a>
+      <form onsubmit="return deletePost(event, '{{.post.ID}}')" style="display:inline;">
+        <button type="submit">Delete</button>
+      </form>
+      <form id="like" action="/posts/{{.ID}}/like" method="post">
+        <input type="submit" value="♥" />
+      </form>
+    </div>
   </div>
+  <a href="/posts">Back to All Posts</a>
 </div>
-
 </body>
 </html>

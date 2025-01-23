@@ -4,6 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .user {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+        }
+        .user p {
+            margin: 10px 0;
+        }
+        a {
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <h1>User Profile</h1>
@@ -19,10 +49,9 @@
 
 <!-- Show Edit button only if logged-in user matches profile ID -->
 {{if eq .user.ID .sessionUserID}}
-    <a href="/users/{{.user.ID}}/edit">Edit Profile</a>
+<a href="/users/{{.user.ID}}/edit">Edit Profile</a>
 {{end}}
 
-<br>
 <a href="/posts">Back to All Posts</a>
 </body>
 </html>

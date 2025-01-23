@@ -46,7 +46,7 @@ func AdminGetUser(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "User not found"})
 		return
 	}
-	c.HTML(http.StatusOK, "user.html", gin.H{"user": user})
+	c.HTML(http.StatusOK, "profile.html", gin.H{"user": user})
 }
 
 func AdminUpdateUserHTML(c *gin.Context) {

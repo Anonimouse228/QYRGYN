@@ -114,6 +114,7 @@ func GetPosts(c *gin.Context) {
 	// Pagination
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "5"))
+	println(pageSize)
 	offset := (page - 1) * pageSize
 
 	var total int64
