@@ -47,10 +47,10 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users", controllers.GetUsers)
 		adminRoutes.POST("/users", controllers.CreateUser)
 		adminRoutes.GET("/users/new", controllers.CreateUserHTML)
-		adminRoutes.PUT("/users/:id", controllers.UpdateUser)
+		adminRoutes.PATCH("/users/:id", controllers.UpdateUser)
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
-		adminRoutes.DELETE("/users/:id", controllers.DeleteUser)
+		adminRoutes.POST("/users/:id/delete", controllers.DeleteUser)
 		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
 		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
 

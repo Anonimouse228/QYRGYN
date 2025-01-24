@@ -36,7 +36,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/users")
+	c.Redirect(http.StatusFound, "/admin/users")
 }
 
 func AdminGetUser(c *gin.Context) {
@@ -132,7 +132,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	// Redirect to user profile page
-	c.Redirect(http.StatusFound, "/users/"+userID)
+	c.Redirect(http.StatusFound, "/admin/users/")
 }
 
 func DeleteUser(c *gin.Context) {
@@ -142,8 +142,8 @@ func DeleteUser(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Could not delete user"})
 		return
 	}
-	c.Redirect(http.StatusFound, "/users")
-	c.Redirect(http.StatusFound, "/users")
+	c.Redirect(http.StatusFound, "/admin/users")
+	return
 }
 
 func GetUserProfile(c *gin.Context) {

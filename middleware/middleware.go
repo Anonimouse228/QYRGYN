@@ -23,7 +23,7 @@ func (rl *RateLimiter) GetLimiter(ip string) *rate.Limiter {
 
 	limiter, exists := rl.limiters[ip]
 	if !exists {
-		limiter = rate.NewLimiter(1, 3)
+		limiter = rate.NewLimiter(2, 5)
 		rl.limiters[ip] = limiter
 	}
 	return limiter

@@ -82,7 +82,7 @@
 <body>
 <div class="container">
   <h1>Users</h1>
-  <a href="/users/new">Create New User</a>
+  <a href="/admin/users/new">Create New User</a>
   <table>
     <thead>
     <tr>
@@ -106,7 +106,7 @@
       <td>{{.Verified}}</td>
       <td class="actions">
         <a href="/users/{{.ID}}/edit">Edit</a>
-        <form action="/users/{{.ID}}" method="POST">
+        <form action="/admin/users/{{.ID}}/delete" method="POST">
           <input type="hidden" name="_method" value="DELETE">
           <button type="submit" class="delete">Delete</button>
         </form>
