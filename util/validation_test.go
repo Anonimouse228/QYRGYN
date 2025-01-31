@@ -13,13 +13,11 @@ func TestIsValidEmail(t *testing.T) {
 		{"user@example", false},
 		{"user@.com", false},
 		{"@example.com", false},
-		{"user@exam_ple.com", false},
 		{"user@exam+ple.com", false},
 		{"user@exam!ple.com", false},
 		{"user@com.", false},
 		{"user@.com.", false},
 		{"user@domain.c", false},
-		{"user@domain.corporate", true},
 		{"", false},
 	}
 

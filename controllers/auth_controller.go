@@ -40,20 +40,22 @@ func Register(c *gin.Context) {
 		return
 	}
 	if len(username) > 20 || len(username) < 3 {
-		print("username is too short")
 		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Username is too short or too long. " +
 			"The length should be between 3 and 20."})
 		return
 	}
 	if len(email) > 250 || len(email) < 5 {
-		println("Email is too short or too long.")
 		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Email too long bruh. " +
 			"The length should be between idk and 100. No one ever will see this"})
 		return
 	}
 	if len(password) > 100 || len(password) < 3 {
-		println("Password too short.")
 		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Password is too short or too long. Should be between 3 and 100"})
+		return
+	}
+
+	if !util.IsValidEmail(email) {
+		c.HTML(http.StatusConflict, "error.html", gin.H{"error": "Email is invalid."})
 		return
 	}
 
