@@ -1,6 +1,6 @@
 # 🌟 QYRGYN  
 
-> A microblogging platform for social networking, created with simplicity and collaboration in mind.  
+> A microblogging platform for social networking, created with simplicity and collaboration in mind.
 
 ## 🌀 About QYRGYN  
 QYRGYN is a lightweight and efficient microblogging app designed specifically for students of **AITU University**. Inspired by platforms like Twitter, it provides an easy-to-use space for sharing thoughts, connecting with peers, and staying updated.  
