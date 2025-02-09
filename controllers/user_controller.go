@@ -11,6 +11,10 @@ import (
 	"strconv"
 )
 
+func AdminDashboard(c *gin.Context) {
+	c.HTML(http.StatusOK, "admin_dashboard.html", nil)
+}
+
 func GetUsers(c *gin.Context) {
 	var users []models.User
 	if err := database.DB.Find(&users).Error; err != nil {
@@ -148,22 +152,37 @@ func DeleteUser(c *gin.Context) {
 
 func GetUserProfile(c *gin.Context) {
 	var user models.User
-	id := c.Param("id")
 
 	// Get logged-in user ID from session
 	sessionUserID := c.GetUint("userID")
 	println(sessionUserID)
 	// Fetch user details
-	if err := database.DB.First(&user, id).Error; err != nil {
+	if err := database.DB.First(&user, sessionUserID).Error; err != nil {
 		c.HTML(http.StatusNotFound, "error.html", gin.H{"error": "User not found"})
 		return
 	}
 
+	chatID, chatStatus := GetChatStatus(fmt.Sprintf("%d", sessionUserID))
+
 	// Render profile page with user info and session ID
 	c.HTML(http.StatusOK, "profile.html", gin.H{
 		"user":          user,
-		"sessionUserID": sessionUserID, // Pass session user ID to template
+		"chatID":        chatID,
+		"chatActive":    chatStatus,
+		"sessionUserID": sessionUserID,
 	})
+}
+
+func GetChatStatus(userID string) (int, bool) {
+	var chat models.Chat
+
+	err := database.DB.Where("user_id = ? AND status = 'active'", userID).First(&chat).Error
+
+	if err != nil {
+		return 0, false
+	}
+
+	return chat.ID, true
 }
 
 func UpdateUserHTML(c *gin.Context) {
@@ -220,7 +239,7 @@ func UpdateUserProfile(c *gin.Context) {
 		return
 	}
 
-	// Validate email format
+	//Validate email format
 	//if !util.IsValidEmail(input.Email) {
 	//	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
 	//	return
@@ -241,7 +260,6 @@ func UpdateUserProfile(c *gin.Context) {
 	})
 
 	if result.Error != nil {
-
 		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update profile"})
 		return
 	}
@@ -252,5 +270,6 @@ func UpdateUserProfile(c *gin.Context) {
 	}
 
 	// Redirect to user profile page
-	c.Redirect(http.StatusFound, "/users/"+userID)
+	c.Redirect(http.StatusFound, "/profile")
+
 }

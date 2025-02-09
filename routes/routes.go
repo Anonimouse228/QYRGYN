@@ -38,6 +38,7 @@ func InitRoutes(router *gin.Engine) {
 	// Load templates
 	router.LoadHTMLGlob("views/templates/user/*")
 	router.Use(middleware.RateLimitMiddleware(rl))
+
 	// Admin stuff
 	adminRoutes := router.Group("/admin")
 	adminRoutes.Use(middleware.RequireAdmin)
@@ -53,6 +54,13 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.POST("/users/:id/delete", controllers.DeleteUser)
 		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
 		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
+
+		adminRoutes.GET("/chats", controllers.AdminChatList)
+		adminRoutes.GET("/chat/:chatID", controllers.AdminChat)
+		adminRoutes.POST("/chat/:chatID/close", controllers.AdminCloseChat)
+		adminRoutes.POST("/chat/:chatID/send", controllers.AdminSendMessage)
+
+		adminRoutes.GET("/", controllers.AdminDashboard)
 
 	}
 
@@ -85,13 +93,20 @@ func InitRoutes(router *gin.Engine) {
 	auth.POST("/posts/:id/like", controllers.ToggleLike)
 
 	// User thingies
-	auth.GET("/users/:id", controllers.GetUserProfile)
+	auth.GET("/profile", controllers.GetUserProfile)
 	auth.GET("/users/:id/edit", controllers.UpdateUserHTML)
 	auth.POST("/users/:id", controllers.UpdateUserProfile)
 
 	// Email system
 	auth.GET("/helpdesk", controllers.HelpdeskPageHTML)
 	auth.POST("/helpdesk", controllers.HelpdeskController)
+
+	// WebSocket
+	auth.GET("/ws", controllers.HandleConnections)
+	go controllers.HandleMessages()
+	auth.POST("/chat/start/:id", controllers.StartChat)
+	auth.GET("/chat/:chatID", controllers.ChatPage)
+	auth.POST("/chat/:chatID/send", controllers.SendMessage)
 
 	// First assignment, first task
 	router.GET("task1", task1.Get)

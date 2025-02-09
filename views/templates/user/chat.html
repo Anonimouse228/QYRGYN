@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Chat</title>
+</head>
+<body>
+<h1>Live Chat</h1>
+<div id="chat-box">
+  {{range .messages}}
+  <p><strong>{{.SenderID}}:</strong> {{.Content}}</p>
+  {{end}}
+</div>
+
+<form action="/chat/{{.chatID}}/send" method="POST">
+  <input type="text" name="message" id="message-input" placeholder="Type your message..." required>
+  <button type="submit" id="send-button">Send</button>
+</form>
+
+<br>
+<a href="/profile"><button>Back to Profile</button></a>
+</body>
+
+<script>
+  var ws = new WebSocket("ws://localhost:8081/ws");
+
+  ws.onopen = function() {
+    console.log("WebSocket connection established.");
+  };
+
+  ws.onmessage = function(event) {
+    var message = JSON.parse(event.data);
+    var chatBox = document.getElementById("chat-box");
+
+    var messageElement = document.createElement("p");
+    messageElement.innerHTML = "<strong>" + message.sender_id + ":</strong> " + message.content;
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  };
+
+
+  // Function to send a new message to the server
+  function sendMessage() {
+    var input = document.getElementById("message-input");
+    var messageContent = input.value;
+    var message = {
+      chat_id: "{{.chatID}}",
+      sender_id: "User",  // Исправлено с Sender на sender_id
+      content: messageContent,
+      created_at: new Date().toISOString() // Добавлено время
+    };
+
+    ws.send(JSON.stringify(message));
+    input.value = "";
+  }
+
+
+  // Attach the send message function to the "Send" button
+  document.getElementById("send-button").onclick = function() {
+    sendMessage();
+  };
+</script>
+
+
+
+</html>

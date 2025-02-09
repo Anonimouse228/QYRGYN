@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Active Chats</title>
+</head>
+<body>
+<h1>Active Chats</h1>
+<ul>
+  {{range .chats}}
+  <li>
+    <a href="/admin/chat/{{.ID}}">Chat with User {{.UserID}}</a>
+    <form action="/admin/chat/{{.ID}}/close" method="POST">
+      <button type="submit">Close chat {{.UserID}}</button>
+    </form>
+  </li>
+  {{end}}
+</ul>
+<br>
+<a href="/admin"><button>Back to Admin Panel</button></a>
+</body>
+</html>

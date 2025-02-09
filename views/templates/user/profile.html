@@ -47,6 +47,15 @@
 
 <a href="/helpdesk">Helpdesk</a>
 
+<h2>Live Support Chat</h2>
+{{if .chatActive}}
+<p><a href="/chat/{{.chatID}}"><button>Go to Active Chat</button></a></p>
+{{else}}
+<form action="/chat/start/{{.user.ID}}" method="POST">
+    <button type="submit">Start a New Chat</button>
+</form>
+{{end}}
+
 <!-- Show Edit button only if logged-in user matches profile ID -->
 {{if eq .user.ID .sessionUserID}}
 <a href="/users/{{.user.ID}}/edit">Edit Profile</a>
