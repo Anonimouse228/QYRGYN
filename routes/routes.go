@@ -13,21 +13,21 @@ import (
 func InitRoutes(router *gin.Engine) {
 	r := gin.Default()
 
+	// Set function map for template rendering
 	router.SetFuncMap(template.FuncMap{
 		"add": util.Add,
 		"sub": util.Sub,
 	})
 
+	// Method override for PUT/DELETE/UPDATE
 	r.Use(func(c *gin.Context) {
 		if c.Request.Method == "POST" {
 			if c.Request.FormValue("_method") == "DELETE" {
 				c.Request.Method = "DELETE"
-
 			}
 			if c.Request.FormValue("_method") == "UPDATE" {
 				c.Request.Method = "UPDATE"
 			}
-
 		}
 		c.Next()
 	})
@@ -38,7 +38,8 @@ func InitRoutes(router *gin.Engine) {
 	// Load templates
 	router.LoadHTMLGlob("views/templates/user/*")
 	router.Use(middleware.RateLimitMiddleware(rl))
-	// Admin stuff
+
+	// Admin routes with necessary middleware
 	adminRoutes := router.Group("/admin")
 	adminRoutes.Use(middleware.RequireAdmin)
 	adminRoutes.Use(middleware.AuthRequired)
@@ -49,19 +50,12 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users/new", controllers.CreateUserHTML)
 		adminRoutes.PATCH("/users/:id", controllers.UpdateUser)
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
-		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
 		adminRoutes.POST("/users/:id/delete", controllers.DeleteUser)
 		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
 		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
-
 	}
 
-	////////////// TEMPORARYYYY\
-	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
-	//router.POST("/execute-query", controllers.ExecuteQuery)
-	//////////////
-
-	// Register and login
+	// User authentication and registration routes
 	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/login") })
 	router.GET("/register", controllers.RegisterHTML)
 	router.GET("/login", controllers.LoginHTML)
@@ -70,7 +64,7 @@ func InitRoutes(router *gin.Engine) {
 	router.POST("/logout", controllers.Logout)
 	router.GET("/verify", controllers.VerifyEmail)
 
-	// Protected routes
+	// Protected routes for authenticated users
 	auth := router.Group("/")
 	auth.Use(middleware.AuthRequired)
 
@@ -84,12 +78,12 @@ func InitRoutes(router *gin.Engine) {
 	auth.DELETE("/posts/:id", controllers.DeletePost)
 	auth.POST("/posts/:id/like", controllers.ToggleLike)
 
-	// User thingies
+	// User profile routes
 	auth.GET("/users/:id", controllers.GetUserProfile)
 	auth.GET("/users/:id/edit", controllers.UpdateUserHTML)
 	auth.POST("/users/:id", controllers.UpdateUserProfile)
 
-	// Email system
+	// Email system routes
 	auth.GET("/helpdesk", controllers.HelpdeskPageHTML)
 	auth.POST("/helpdesk", controllers.HelpdeskController)
 
@@ -97,13 +91,11 @@ func InitRoutes(router *gin.Engine) {
 	router.GET("task1", task1.Get)
 	router.POST("task1", task1.Post)
 
-	// User routes with rate limiter
-	//router.GET("/users", controllers.GetUsers)
-	//router.GET("/users/new", controllers.NewUserForm)
-	//router.POST("/users", controllers.CreateUser)
-	//router.GET("/users/:id", controllers.GetUser)
-	//router.GET("/users/:id/edit", controllers.EditUser)
-	//router.PATCH("/users/:id", controllers.UpdateUser)
-	//router.DELETE("/users/:id", controllers.DeleteUser)
+	// Payment routes
+	auth.GET("/payment/:subscription_id", controllers.PaymentPage) // Show payment page
+	auth.POST("/payment", controllers.Payment)                     // Handle payment submission
+	auth.POST("/payment/process", controllers.ProcessPayment)      // Process payment through external service
+
+	// You can add other routes as needed
 
 }

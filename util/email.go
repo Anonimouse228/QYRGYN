@@ -41,7 +41,7 @@ func SendVerificationEmail(email, token string) error {
 	mail.SetHeader("From", "your-email@example.com")
 	mail.SetHeader("To", email)
 	mail.SetHeader("Subject", "Email Verification")
-	link := fmt.Sprintf("https://qyrgyn.onrender.com/verify?token=%s", token)
+	link := fmt.Sprintf("http://localhost:8081/verify?token=%s", token)
 	mail.SetBody("text/html", fmt.Sprintf(`<h1>Verify Your Email</h1>
     <p>Click the link below to verify your email address:</p>
     <a href="%s">%s</a>`, link, link))
