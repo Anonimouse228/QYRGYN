@@ -93,7 +93,7 @@ func InitRoutes(router *gin.Engine) {
 
 	// Payment routes
 	auth.GET("/payment/:subscription_id", controllers.PaymentPage) // Show payment page
-	auth.POST("/payment", controllers.Payment)                     // Handle payment submission
+	auth.GET("/payment", controllers.Payment)                      // Handle payment submission
 	auth.POST("/payment/process", controllers.ProcessPayment)      // Process payment through external service
 
 	// You can add other routes as needed
