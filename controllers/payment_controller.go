@@ -30,7 +30,7 @@ func PaymentPage(c *gin.Context) {
 
 // Payment handles the form submission for a user paying for a subscription.
 func Payment(c *gin.Context) {
-	// Get the userID from the context
+	// Получаем userID из контекста
 	userID := c.GetUint("userID")
 	if userID == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -46,37 +46,41 @@ func Payment(c *gin.Context) {
 		Amount         float64 `form:"amount" binding:"required"`
 	}
 
-	// Bind the form data
+	// Привязка данных формы
 	if err := c.ShouldBind(&form); err != nil {
-		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Invalid payment details"})
+		// Печатаем подробности ошибки для отладки
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid payment details",
+			"details": err.Error(),
+		})
 		return
 	}
 
-	// Simulate a payment processing delay
+	// Имитация задержки при обработке платежа
 	time.Sleep(2 * time.Second)
 
-	// Fetch the subscription from the database
+	// Извлекаем подписку из базы
 	var subscription models.Subscription
 	if err := database.DB.First(&subscription, form.SubscriptionID).Error; err != nil {
-		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Subscription not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Subscription not found"})
 		return
 	}
 
-	// Check if the subscription is already paid
+	// Проверяем, была ли уже оплачена подписка
 	if subscription.Status == "paid" {
-		c.HTML(http.StatusBadRequest, "error.html", gin.H{"error": "Subscription already paid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Subscription already paid"})
 		return
 	}
 
-	// Mark the subscription as paid
+	// Обновляем статус подписки на "paid"
 	subscription.Status = "paid"
 	if err := database.DB.Save(&subscription).Error; err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Failed to update subscription status"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update subscription status"})
 		return
 	}
 
-	// Optionally, return a success message or redirect to subscriptions page
-	c.Redirect(http.StatusSeeOther, "/subscriptions")
+	// Возвращаем успех или перенаправляем на страницу подписки
+	c.JSON(http.StatusOK, gin.H{"message": "Payment successful", "subscription": subscription})
 }
 
 // ProcessPayment processes the payment and updates the subscription status.

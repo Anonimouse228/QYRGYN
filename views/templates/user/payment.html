@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .payment-form {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    .payment-summary {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Payment Page</h1>
+
+  <div class="payment-summary">
+    <h2>Subscription Plan</h2>
+    <p><strong>Plan:</strong> Premium Subscription</p>
+    <p><strong>Price:</strong> $9.99 per month</p>
+
+  <form class="payment-form" id="paymentForm">
+    <label>
+      Card Number:
+      <input type="text" id="cardNumber" name="cardNumber" placeholder="Enter your card number" required>
+    </label>
+    <label>
+      Expiry Date:
+      <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
+    </label>
+    <label>
+      CVV:
+      <input type="text" id="cvv" name="cvv" placeholder="Enter CVV" required>
+    </label>
+    <label>
+      Subscription Type:
+      <select id="subscriptionType" name="subscriptionType" required>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+      </select>
+    </label>
+    <button type="submit">Proceed to Payment</button>
+  </form>
+
+  <br>
+  <a href="/posts">
+    <button>Back to Posts</button>
+  </a>
+</div>
+<script>
+  document.getElementById('paymentForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting the traditional way
+
+    // Gather the form data
+    const cardNumber = document.getElementById('cardNumber').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    const subscriptionType = document.getElementById('subscriptionType').value;
+
+    // Create an object to send to the server
+    const paymentData = {
+      cardNumber: cardNumber,
+      expiryDate: expiryDate,
+      cvv: cvv,
+      subscriptionType: subscriptionType
+    };
+
+    // Send the data to the backend API using fetch
+    fetch('/api/payment/process', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(paymentData)
+    })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Payment successful!');
+                window.location.href = '/confirmation'; // Redirect to a confirmation page
+              } else {
+                alert('Payment failed: ' + data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('An error occurred during payment.');
+            });
+  });
+</script>
+</div>
+</body>
+</html>
