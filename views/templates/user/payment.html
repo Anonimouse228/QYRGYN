@@ -74,75 +74,47 @@
     <p><strong>Plan:</strong> Premium Subscription</p>
     <p><strong>Price:</strong> $9.99 per month</p>
 
-  <form class="payment-form" id="paymentForm">
-    <label>
-      Card Number:
-      <input type="text" id="cardNumber" name="cardNumber" placeholder="Enter your card number" required>
-    </label>
-    <label>
-      Expiry Date:
-      <input type="text" id="expiryDate" name="expiryDate" placeholder="MM/YY" required>
-    </label>
-    <label>
-      CVV:
-      <input type="text" id="cvv" name="cvv" placeholder="Enter CVV" required>
-    </label>
-    <label>
-      Subscription Type:
-      <select id="subscriptionType" name="subscriptionType" required>
-        <option value="monthly">Monthly</option>
-        <option value="yearly">Yearly</option>
-      </select>
-    </label>
-    <button type="submit">Proceed to Payment</button>
-  </form>
+    <form action="/payment" class="payment-form" id="paymentForm" method="POST">
+      <label>
+        Card Name:
+        <input type="text" id="cardName" name="cardName" placeholder="Enter your card name" required>
+      </label>
+      <label>
+        Card Number:
+        <input type="text" id="cardNumber" name="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{4})/g, '$1 ').trim();">
+      </label>
+      <label>
+        Expiry Date:
+        <input type="text" id="expiryDate" name="expiryDate" maxlength="5" placeholder="MM/YY" required oninput="formatExpiryDate(this)">
+      </label>
+      <label>
+        CVV:
+        <input type="text" id="cvv" name="cvv" placeholder="Enter CVV" maxlength="3" required oninput="this.value = this.value.replace(/\D/g, '');">
+      </label>
+      <input type="hidden" id="amount" value=9.99 name="amount">
+      <input type="hidden" id="user_id" name="user_id" value="{{.userID}}">
+      <input type="hidden" id="subscription_id" name="subscription_id" value="{{.subscriptionID}}">
+
+      <button type="submit">Proceed to Payment</button>
+    </form>
+  </div>
+
 
   <br>
   <a href="/posts">
     <button>Back to Posts</button>
   </a>
 </div>
-<script>
-  document.getElementById('paymentForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the form from submitting the traditional way
-
-    // Gather the form data
-    const cardNumber = document.getElementById('cardNumber').value;
-    const expiryDate = document.getElementById('expiryDate').value;
-    const cvv = document.getElementById('cvv').value;
-    const subscriptionType = document.getElementById('subscriptionType').value;
-
-    // Create an object to send to the server
-    const paymentData = {
-      cardNumber: cardNumber,
-      expiryDate: expiryDate,
-      cvv: cvv,
-      subscriptionType: subscriptionType
-    };
-
-    // Send the data to the backend API using fetch
-    fetch('/api/payment/process', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(paymentData)
-    })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                alert('Payment successful!');
-                window.location.href = '/confirmation'; // Redirect to a confirmation page
-              } else {
-                alert('Payment failed: ' + data.message);
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert('An error occurred during payment.');
-            });
-  });
-</script>
-</div>
 </body>
+
+<script>
+  function formatExpiryDate(input) {
+    let value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+    if (value.length > 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    input.value = value.substring(0, 5); // Ensure max length is 5
+  }
+</script>
+
 </html>

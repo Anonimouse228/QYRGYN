@@ -5,7 +5,6 @@ import (
 	"QYRGYN/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 // Subscribe создает подписку для пользователя
@@ -28,12 +27,10 @@ func Subscribe(c *gin.Context) {
 	}
 
 	subscription := models.Subscription{
-		UserID:    userID,
-		Type:      form.Type,
-		Price:     form.Price,
-		StartDate: time.Now(),
-		EndDate:   time.Now().AddDate(0, form.Duration, 0),
-		Status:    "active",
+		UserID: userID,
+		Type:   form.Type,
+		Price:  form.Price,
+		Status: "active",
 	}
 
 	if err := database.DB.Create(&subscription).Error; err != nil {

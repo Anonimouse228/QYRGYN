@@ -19,5 +19,5 @@ func InitDatabase(connectionString string) {
 		log.Fatalf("Could not connect to the database: %v", err)
 	}
 
-	DB.AutoMigrate(&models.User{}, &models.Post{})
+	DB.AutoMigrate(&models.User{}, &models.Post{}, &models.PaymentRequest{}, &models.PaymentResponse{}, &models.Subscription{})
 }

@@ -51,9 +51,12 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.PATCH("/users/:id", controllers.UpdateUser)
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		adminRoutes.POST("/users/:id/delete", controllers.DeleteUser)
-		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
-		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
+		//adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
+		//adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
 	}
+
+	router.GET("/execute-query", controllers.ExecuteQueryHTML)
+	router.POST("/execute-query", controllers.ExecuteQuery)
 
 	// User authentication and registration routes
 	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/login") })
@@ -92,10 +95,8 @@ func InitRoutes(router *gin.Engine) {
 	router.POST("task1", task1.Post)
 
 	// Payment routes
-	auth.GET("/payment/:subscription_id", controllers.PaymentPage) // Show payment page
-	auth.GET("/payment", controllers.Payment)                      // Handle payment submission
-	auth.POST("/payment/process", controllers.ProcessPayment)      // Process payment through external service
-
-	// You can add other routes as needed
+	auth.GET("/payment", controllers.PaymentPage) // Show payment page
+	//auth.POST("/payment", controllers.Payment)              // Handle payment submission
+	auth.POST("/payment", controllers.ProcessPayment) // Process payment through external service
 
 }
