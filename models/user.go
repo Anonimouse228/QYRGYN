@@ -9,6 +9,7 @@ type User struct {
 	Email             string    `json:"email" gorm:"not null;unique"`
 	Verified          bool      `gorm:"default:false"`
 	VerificationToken string    `gorm:"type:varchar(255)"`
+	HasPremium        bool      `gorm:"default:false"`
 	Role              string    `json:"role" gorm:"default:'user';not null;check:role IN ('user', 'admin')"`
 	CreatedAt         time.Time `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt         time.Time `json:"updated_at" gorm:"autoUpdateTime"`

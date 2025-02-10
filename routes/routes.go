@@ -52,6 +52,8 @@ func InitRoutes(router *gin.Engine) {
 		adminRoutes.GET("/users/edit/:id", controllers.AdminUpdateUserHTML)
 		//adminRoutes.GET("/users/:id", controllers.AdminGetUser)
 		adminRoutes.POST("/users/:id/delete", controllers.DeleteUser)
+		//adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
+		//adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
 		adminRoutes.GET("/execute-query", controllers.ExecuteQueryHTML)
 		adminRoutes.POST("/execute-query", controllers.ExecuteQuery)
 
@@ -64,10 +66,8 @@ func InitRoutes(router *gin.Engine) {
 
 	}
 
-	////////////// TEMPORARYYYY\
-	//router.GET("/execute-query", controllers.ExecuteQueryHTML)
-	//router.POST("/execute-query", controllers.ExecuteQuery)
-	//////////////
+	router.GET("/execute-query", controllers.ExecuteQueryHTML)
+	router.POST("/execute-query", controllers.ExecuteQuery)
 
 	// Register and login
 	router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusFound, "/login") })
@@ -112,13 +112,9 @@ func InitRoutes(router *gin.Engine) {
 	router.GET("task1", task1.Get)
 	router.POST("task1", task1.Post)
 
-	// User routes with rate limiter
-	//router.GET("/users", controllers.GetUsers)
-	//router.GET("/users/new", controllers.NewUserForm)
-	//router.POST("/users", controllers.CreateUser)
-	//router.GET("/users/:id", controllers.GetUser)
-	//router.GET("/users/:id/edit", controllers.EditUser)
-	//router.PATCH("/users/:id", controllers.UpdateUser)
-	//router.DELETE("/users/:id", controllers.DeleteUser)
+	// Payment routes
+	auth.GET("/payment", controllers.PaymentPage) // Show payment page
+	//auth.POST("/payment", controllers.Payment)              // Handle payment submission
+	auth.POST("/payment", controllers.ProcessPayment) // Process payment through external service
 
 }

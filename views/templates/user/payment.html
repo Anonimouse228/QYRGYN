@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+    .payment-form {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.8;
+    }
+    .payment-summary {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Payment Page</h1>
+
+  <div class="payment-summary">
+    <h2>Subscription Plan</h2>
+    <p><strong>Plan:</strong> Premium Subscription</p>
+    <p><strong>Price:</strong> $9.99 per month</p>
+
+    <form action="/payment" class="payment-form" id="paymentForm" method="POST">
+      <label>
+        Card Name:
+        <input type="text" id="cardName" name="cardName" placeholder="Enter your card name" required>
+      </label>
+      <label>
+        Card Number:
+        <input type="text" id="cardNumber" name="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{4})/g, '$1 ').trim();">
+      </label>
+      <label>
+        Expiry Date:
+        <input type="text" id="expiryDate" name="expiryDate" maxlength="5" placeholder="MM/YY" required oninput="formatExpiryDate(this)">
+      </label>
+      <label>
+        CVV:
+        <input type="text" id="cvv" name="cvv" placeholder="Enter CVV" maxlength="3" required oninput="this.value = this.value.replace(/\D/g, '');">
+      </label>
+      <input type="hidden" id="amount" value=9.99 name="amount">
+      <input type="hidden" id="user_id" name="user_id" value="{{.userID}}">
+      <input type="hidden" id="subscription_id" name="subscription_id" value="{{.subscriptionID}}">
+
+      <button type="submit">Proceed to Payment</button>
+    </form>
+  </div>
+
+
+  <br>
+  <a href="/posts">
+    <button>Back to Posts</button>
+  </a>
+</div>
+</body>
+
+<script>
+  function formatExpiryDate(input) {
+    let value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+    if (value.length > 2) {
+      value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    input.value = value.substring(0, 5); // Ensure max length is 5
+  }
+</script>
+
+</html>
