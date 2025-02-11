@@ -109,15 +109,15 @@
 
 <script>
   function formatExpiryDate(input) {
-    let value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+    let value = input.value.replace(/\D/g, '');
     if (value.length > 2) {
       value = value.substring(0, 2) + '/' + value.substring(2, 4);
     }
-    input.value = value.substring(0, 5); // Ensure max length is 5
+    input.value = value.substring(0, 5);
   }
 
     document.getElementById("paymentForm").addEventListener("submit", async function(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
     // Collect form data
     const paymentData = {
@@ -130,18 +130,18 @@
     subscription_id: parseInt(document.getElementById("subscription_id").value)
   };
 
-    console.log("Sending JSON:", paymentData); // Debugging
+    console.log("Sending JSON:", paymentData);
 
     try {
     const response = await fetch("/payment", {
     method: "POST",
     headers: {
-    "Content-Type": "application/json"  // Tell the server we're sending JSON
+    "Content-Type": "application/json"
   },
-    body: JSON.stringify(paymentData) // Convert JS object to JSON string
+    body: JSON.stringify(paymentData)
   });
 
-    const result = await response.json(); // Parse the JSON response
+    const result = await response.json();
     console.log("Server response:", result);
 
     if (response.ok) {
