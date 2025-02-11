@@ -193,7 +193,7 @@ func ProcessPayment(c *gin.Context) {
 		return
 	}
 
-	resp, err := http.Post("http://localhost:8080/api/payments/process", "application/json", bytes.NewBuffer(jsonData))
+	resp, err := http.Post("https://qyrgyn-microservice.onrender.com/api/payments/process", "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Payment service unavailable"})
 		return
