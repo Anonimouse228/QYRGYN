@@ -102,7 +102,7 @@ func InitRoutes(router *gin.Engine) {
 	auth.POST("/helpdesk", controllers.HelpdeskController)
 
 	// WebSocket
-	auth.GET("/ws", controllers.HandleConnections)
+	auth.GET("/wss", controllers.HandleConnections)
 	go controllers.HandleMessages()
 	auth.POST("/chat/start/:id", controllers.StartChat)
 	auth.GET("/chat/:chatID", controllers.ChatPage)
