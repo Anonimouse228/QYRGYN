@@ -148,10 +148,13 @@ func ProcessPayment(c *gin.Context) {
 
 	// Получаем данные карты
 	var paymentData models.PaymentRequest
-	if err := c.ShouldBind(&paymentData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format" + err.Error()})
+	if err := c.ShouldBindJSON(&paymentData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format: " + err.Error()})
 		return
 	}
+
+	body, _ := io.ReadAll(c.Request.Body)
+	fmt.Println("Raw request body:", string(body))
 
 	var user models.User
 	if err := database.DB.First(&user, userID).Error; err != nil {
@@ -176,6 +179,12 @@ func ProcessPayment(c *gin.Context) {
 	paymentData.UserID = userIDUint
 	paymentData.SubscriptionID = subscription.ID
 	paymentData.Email = user.Email
+
+	println(paymentData.CardName)
+	println(paymentData.SubscriptionID)
+	println(paymentData.ExpiryDate)
+	println(paymentData.CVV)
+	println(paymentData.CardNumber)
 
 	// Отправляем запрос в платежный микросервис
 	jsonData, err := json.Marshal(paymentData)

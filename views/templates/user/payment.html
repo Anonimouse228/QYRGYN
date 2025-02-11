@@ -74,24 +74,24 @@
     <p><strong>Plan:</strong> Premium Subscription</p>
     <p><strong>Price:</strong> $9.99 per month</p>
 
-    <form action="/payment" class="payment-form" id="paymentForm" method="POST">
+    <form id="paymentForm">
       <label>
         Card Name:
-        <input type="text" id="cardName" name="cardName" placeholder="Enter your card name" required>
+        <input type="text" id="card_name" name="card_name" required>
       </label>
       <label>
         Card Number:
-        <input type="text" id="cardNumber" name="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456" required oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{4})/g, '$1 ').trim();">
+        <input type="text" id="card_number" name="card_number" maxlength="19" placeholder="1234 5678 9012 3456" required oninput="this.value = this.value.replace(/\D/g, '').replace(/(\d{4})/g, '$1 ').trim();">
       </label>
       <label>
         Expiry Date:
-        <input type="text" id="expiryDate" name="expiryDate" maxlength="5" placeholder="MM/YY" required oninput="formatExpiryDate(this)">
+        <input type="text" id="expiry_date" name="expiry_date" maxlength="5" placeholder="MM/YY" required oninput="formatExpiryDate(this)">
       </label>
       <label>
         CVV:
-        <input type="text" id="cvv" name="cvv" placeholder="Enter CVV" maxlength="3" required oninput="this.value = this.value.replace(/\D/g, '');">
+        <input type="text" id="cvv" name="cvv" maxlength="3" required oninput="this.value = this.value.replace(/\D/g, '');">
       </label>
-      <input type="hidden" id="amount" value=9.99 name="amount">
+      <input type="hidden" id="amount" name="amount" value="9.99">
       <input type="hidden" id="user_id" name="user_id" value="{{.userID}}">
       <input type="hidden" id="subscription_id" name="subscription_id" value="{{.subscriptionID}}">
 
@@ -115,6 +115,47 @@
     }
     input.value = value.substring(0, 5); // Ensure max length is 5
   }
+
+    document.getElementById("paymentForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Prevent default form submission
+
+    // Collect form data
+    const paymentData = {
+    card_name: document.getElementById("card_name").value,
+    card_number: document.getElementById("card_number").value,
+    expiry_date: document.getElementById("expiry_date").value,
+    cvv: document.getElementById("cvv").value,
+    amount: parseFloat(document.getElementById("amount").value),
+    user_id: parseInt(document.getElementById("user_id").value),
+    subscription_id: parseInt(document.getElementById("subscription_id").value)
+  };
+
+    console.log("Sending JSON:", paymentData); // Debugging
+
+    try {
+    const response = await fetch("/payment", {
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json"  // Tell the server we're sending JSON
+  },
+    body: JSON.stringify(paymentData) // Convert JS object to JSON string
+  });
+
+    const result = await response.json(); // Parse the JSON response
+    console.log("Server response:", result);
+
+    if (response.ok) {
+    alert("Payment successful!");
+  } else {
+    alert("Payment failed: " + result.error);
+  }
+  } catch (error) {
+    console.error("Error processing payment:", error);
+    alert("Something went wrong.");
+  }
+  });
+
+
 </script>
 
 </html>
