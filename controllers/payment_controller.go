@@ -153,6 +153,12 @@ func ProcessPayment(c *gin.Context) {
 		return
 	}
 
+	var user models.User
+	if err := database.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
 	// Создаем подписку в базе данных
 	subscription := models.Subscription{
 		UserID: userIDUint,
@@ -169,6 +175,7 @@ func ProcessPayment(c *gin.Context) {
 	paymentData.Amount = subscription.Price
 	paymentData.UserID = userIDUint
 	paymentData.SubscriptionID = subscription.ID
+	paymentData.Email = user.Email
 
 	// Отправляем запрос в платежный микросервис
 	jsonData, err := json.Marshal(paymentData)
@@ -201,7 +208,6 @@ func ProcessPayment(c *gin.Context) {
 	println(paymentResponse.Success)
 	println(paymentResponse.Message)
 
-	var user models.User
 	if err := database.DB.First(&user, userIDUint).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return

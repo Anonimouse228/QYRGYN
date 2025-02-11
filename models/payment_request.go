@@ -9,4 +9,5 @@ type PaymentRequest struct {
 	Amount         float64 `json:"amount"`
 	UserID         uint    `json:"user_id"`
 	SubscriptionID uint    `json:"subscription_id"`
+	Email          string  `json:"email"`
 }
